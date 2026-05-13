@@ -4,118 +4,127 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Schottland 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-  :root {
-    --bg:#0c1a0f;--bg2:#111f14;--bg3:#162319;--card:#182118;--card2:#1e2c1e;
-    --border:#253325;--border2:#2e422e;--gold:#c9a45a;--gold2:#e8c07a;
-    --green:#5a9e6a;--green2:#7abf8a;--slate:#8aabb0;--amber:#e8a84a;
-    --red:#d4735a;--purple:#a090d4;--teal:#5abfb0;--text:#e0d4bc;--text2:#a0b4a0;--text3:#6a886a;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding-bottom:30px;}
+:root{--bg:#0c1a0f;--bg2:#111f14;--bg3:#162319;--card:#182118;--card2:#1e2c1e;--border:#253325;--border2:#2e422e;--gold:#c9a45a;--gold2:#e8c07a;--green:#5a9e6a;--green2:#7abf8a;--slate:#8aabb0;--amber:#e8a84a;--red:#d4735a;--purple:#a090d4;--teal:#5abfb0;--text:#e0d4bc;--text2:#a0b4a0;--text3:#6a886a;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding-bottom:30px;}
 
-  /* PASSWORD */
-  #pw{position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#0c2214,#0e1e12);display:flex;align-items:center;justify-content:center;flex-direction:column;padding:32px;}
-  #pw .flag{font-size:3.5rem;margin-bottom:16px;}
-  #pw h2{color:#c9a45a;font-size:1.4rem;font-weight:800;margin-bottom:6px;text-align:center;}
-  #pw p{color:#a0b4a0;font-size:0.85rem;margin-bottom:28px;text-align:center;}
-  #pw input{width:100%;max-width:280px;background:#182118;border:1px solid #2e422e;color:#e0d4bc;font-size:1.1rem;font-weight:600;padding:14px 18px;border-radius:14px;outline:none;text-align:center;letter-spacing:0.05em;margin-bottom:14px;}
-  #pw input:focus{border-color:#c9a45a;}
-  #pw input.shake{animation:shake 0.4s ease;border-color:#d4735a;}
-  @keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}}
-  #pw button{width:100%;max-width:280px;background:linear-gradient(135deg,#2a5a34,#1a3a22);border:1px solid #2e422e;color:#e8c07a;font-size:1rem;font-weight:700;padding:14px;border-radius:14px;cursor:pointer;}
-  #pw button:active{opacity:0.8;}
-  #pw-err{color:#d4735a;font-size:0.8rem;margin-top:12px;min-height:18px;}
+/* PASSWORD */
+#pw{position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#0c2214,#0e1e12);display:flex;align-items:center;justify-content:center;flex-direction:column;padding:32px;}
+#pw .flag{font-size:3.5rem;margin-bottom:16px;}
+#pw h2{color:#c9a45a;font-size:1.4rem;font-weight:800;margin-bottom:6px;text-align:center;}
+#pw p{color:#a0b4a0;font-size:0.85rem;margin-bottom:28px;text-align:center;}
+#pw-in{width:100%;max-width:280px;background:#182118;border:1px solid #2e422e;color:#e0d4bc;font-size:1.1rem;font-weight:600;padding:14px 18px;border-radius:14px;outline:none;text-align:center;letter-spacing:0.05em;margin-bottom:14px;}
+#pw-in:focus{border-color:#c9a45a;}
+#pw-in.shake{animation:shake 0.4s ease;border-color:#d4735a;}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}}
+#pw-btn{width:100%;max-width:280px;background:linear-gradient(135deg,#2a5a34,#1a3a22);border:1px solid #2e422e;color:#e8c07a;font-size:1rem;font-weight:700;padding:14px;border-radius:14px;cursor:pointer;}
+#pw-btn:active{opacity:0.8;}
+#pw-err{color:#d4735a;font-size:0.8rem;margin-top:12px;min-height:18px;}
 
-  /* HEADER */
-  .header{background:linear-gradient(160deg,#0c2214,#142a18,#0e1e12);padding:18px 16px 14px;border-bottom:1px solid var(--border2);position:sticky;top:0;z-index:200;}
-  .header-top{display:flex;align-items:center;justify-content:space-between;}
-  .header h1{font-size:1.25rem;font-weight:800;color:var(--gold);letter-spacing:-0.01em;}
-  .header-flag{font-size:1.6rem;}
-  .header-sub{color:var(--text2);font-size:0.78rem;margin-top:3px;}
-  .progress-bar{height:2px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden;}
-  .progress-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--gold));border-radius:2px;transition:width 0.3s;}
+/* HEADER */
+.header{background:linear-gradient(160deg,#0c2214,#142a18,#0e1e12);padding:18px 16px 14px;border-bottom:1px solid var(--border2);position:sticky;top:0;z-index:200;}
+.header-top{display:flex;align-items:center;justify-content:space-between;}
+.header h1{font-size:1.25rem;font-weight:800;color:var(--gold);}
+.header-flag{font-size:1.6rem;}
+.header-sub{color:var(--text2);font-size:0.78rem;margin-top:3px;}
+.progress-bar{height:2px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--gold));border-radius:2px;transition:width 0.3s;}
 
-  /* TABS */
-  .tab-nav{display:flex;overflow-x:auto;background:var(--bg2);border-bottom:1px solid var(--border);scrollbar-width:none;position:sticky;top:72px;z-index:199;-webkit-overflow-scrolling:touch;}
-  .tab-nav::-webkit-scrollbar{display:none;}
-  .tab{flex:0 0 auto;padding:9px 13px 8px;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;text-align:center;min-width:56px;user-select:none;}
-  .tab:active{opacity:0.7;}
-  .tab.active{border-bottom-color:var(--gold);}
-  .tab-date{font-size:0.82rem;font-weight:700;color:var(--text2);}
-  .tab.active .tab-date{color:var(--gold);}
-  .tab-label{font-size:0.6rem;color:var(--text3);margin-top:1px;white-space:nowrap;}
-  .tab.active .tab-label{color:var(--gold2);opacity:0.7;}
+/* TABS */
+.tab-nav{display:flex;overflow-x:auto;background:var(--bg2);border-bottom:1px solid var(--border);scrollbar-width:none;position:sticky;top:72px;z-index:199;-webkit-overflow-scrolling:touch;}
+.tab-nav::-webkit-scrollbar{display:none;}
+.tab{flex:0 0 auto;padding:9px 13px 8px;cursor:pointer;border-bottom:2px solid transparent;text-align:center;min-width:56px;user-select:none;}
+.tab.active{border-bottom-color:var(--gold);}
+.tab-date{font-size:0.82rem;font-weight:700;color:var(--text2);}
+.tab.active .tab-date{color:var(--gold);}
+.tab-label{font-size:0.6rem;color:var(--text3);margin-top:1px;white-space:nowrap;}
+.tab.active .tab-label{color:var(--gold2);opacity:0.7;}
 
-  /* DAYS */
-  .day{display:none;padding:14px 14px 20px;max-width:560px;margin:0 auto;}
-  .day.active{display:block;}
+/* DAY */
+.day{display:none;padding:14px 14px 20px;max-width:940px;margin:0 auto;}
+.day.active{display:block;}
 
-  .day-header{background:linear-gradient(140deg,#182e1c,#0f2014);border:1px solid var(--border2);border-radius:16px;padding:16px;margin-bottom:14px;position:relative;overflow:hidden;}
-  .day-header::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(201,164,90,0.08),transparent);}
-  .day-header h2{font-size:1.15rem;font-weight:800;color:var(--gold);line-height:1.2;}
-  .day-header-date{font-size:0.75rem;color:var(--text2);margin-top:3px;}
-  .day-header-route{margin-top:8px;font-size:0.82rem;color:var(--text2);line-height:1.4;border-top:1px solid var(--border);padding-top:8px;}
+/* TWO-COLUMN LAYOUT */
+.day-twocol{display:flex;flex-direction:column;gap:12px;}
+@media(min-width:680px){
+  .day-twocol{flex-direction:row;align-items:flex-start;}
+  .day-map-panel{order:2;width:310px;flex-shrink:0;height:520px;position:sticky;top:132px;}
+  .day-content{order:1;flex:1;min-width:0;}
+}
 
-  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:12px;overflow:hidden;}
-  .card-title{display:flex;align-items:center;gap:7px;padding:11px 14px 10px;border-bottom:1px solid var(--border);font-size:0.72rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;}
-  .ct-stops{color:var(--green2);}.ct-stay{color:var(--slate);}.ct-dinner{color:var(--amber);}
-  .ct-note{color:var(--gold);}.ct-special{color:var(--purple);}.ct-bonus{color:var(--teal);}
+/* MAP PANEL */
+.day-map-panel{width:100%;height:220px;border-radius:14px;overflow:hidden;border:1px solid var(--border2);background:var(--card);}
+.day-map-panel .leaflet-map{width:100%;height:100%;}
+.leaflet-popup-content-wrapper{background:#1e2c1e;border:1px solid #2e422e;color:#e0d4bc;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.5);}
+.leaflet-popup-tip{background:#1e2c1e;}
+.leaflet-popup-content{margin:8px 12px;font-size:0.8rem;font-weight:600;}
+.leaflet-control-zoom a{background:#182118 !important;color:#c9a45a !important;border-color:#2e422e !important;}
+.leaflet-control-zoom a:hover{background:#1e2c1e !important;}
+.leaflet-bar{border-color:#2e422e !important;}
+.leaflet-control-attribution{background:rgba(12,26,15,0.7) !important;color:#6a886a !important;font-size:0.55rem !important;}
+.leaflet-control-attribution a{color:#5a9e6a !important;}
 
-  .stop{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border);}
-  .stop:last-child{border-bottom:none;}
-  .stop-icon{font-size:1.15rem;flex-shrink:0;line-height:1;margin-top:1px;}
-  .stop-body{flex:1;min-width:0;}
-  .stop-name{font-size:0.93rem;font-weight:600;color:var(--text);}
-  .stop-note{font-size:0.78rem;color:var(--text2);margin-top:2px;line-height:1.4;}
-  .stop-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;}
+/* DAY HEADER */
+.day-header{background:linear-gradient(140deg,#182e1c,#0f2014);border:1px solid var(--border2);border-radius:16px;padding:16px;margin-bottom:12px;}
+.day-header h2{font-size:1.15rem;font-weight:800;color:var(--gold);line-height:1.2;}
+.day-header-date{font-size:0.75rem;color:var(--text2);margin-top:3px;}
+.day-header-route{margin-top:8px;font-size:0.82rem;color:var(--text2);line-height:1.4;border-top:1px solid var(--border);padding-top:8px;}
 
-  .badge{display:inline-flex;align-items:center;gap:3px;font-size:0.7rem;font-weight:600;padding:3px 8px;border-radius:20px;text-decoration:none;border:1px solid transparent;white-space:nowrap;}
-  .badge-map{background:rgba(90,158,106,0.12);color:var(--green2);border-color:rgba(90,158,106,0.25);}
-  .badge-map:active{background:rgba(90,158,106,0.25);}
-  .badge-time{background:rgba(232,168,74,0.12);color:var(--amber);border-color:rgba(232,168,74,0.25);}
-  .badge-res{background:rgba(201,164,90,0.12);color:var(--gold2);border-color:rgba(201,164,90,0.25);}
-  .badge-new{background:rgba(160,144,212,0.15);color:var(--purple);border-color:rgba(160,144,212,0.3);font-size:0.62rem;}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:12px;overflow:hidden;}
+.card-title{display:flex;align-items:center;gap:7px;padding:11px 14px 10px;border-bottom:1px solid var(--border);font-size:0.72rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;}
+.ct-stops{color:var(--green2);}.ct-stay{color:var(--slate);}.ct-dinner{color:var(--amber);}.ct-note{color:var(--gold);}.ct-special{color:var(--purple);}.ct-bonus{color:var(--teal);}
+.stop{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border);}
+.stop:last-child{border-bottom:none;}
+.stop-icon{font-size:1.1rem;flex-shrink:0;line-height:1;margin-top:1px;}
+.stop-body{flex:1;min-width:0;}
+.stop-name{font-size:0.93rem;font-weight:600;color:var(--text);}
+.stop-note{font-size:0.78rem;color:var(--text2);margin-top:2px;line-height:1.4;}
+.stop-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;}
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:0.7rem;font-weight:600;padding:3px 8px;border-radius:20px;text-decoration:none;border:1px solid transparent;white-space:nowrap;}
+.badge-map{background:rgba(90,158,106,0.12);color:var(--green2);border-color:rgba(90,158,106,0.25);}
+.badge-map:active{background:rgba(90,158,106,0.25);}
+.badge-time{background:rgba(232,168,74,0.12);color:var(--amber);border-color:rgba(232,168,74,0.25);}
+.badge-res{background:rgba(201,164,90,0.12);color:var(--gold2);border-color:rgba(201,164,90,0.25);}
+.badge-new{background:rgba(160,144,212,0.15);color:var(--purple);border-color:rgba(160,144,212,0.3);font-size:0.62rem;}
+.info-block{padding:12px 14px;}
+.info-name{font-size:0.95rem;font-weight:700;color:var(--text);}
+.info-addr{font-size:0.77rem;color:var(--text2);margin-top:2px;font-style:italic;}
+.info-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center;}
+.phone-link{display:inline-flex;align-items:center;gap:4px;color:var(--green2);font-size:0.8rem;text-decoration:none;background:rgba(90,158,106,0.1);padding:4px 10px;border-radius:20px;border:1px solid rgba(90,158,106,0.2);}
+.nights-badge{font-size:0.72rem;color:var(--text3);background:var(--bg3);padding:3px 8px;border-radius:10px;}
+.res-badge{font-size:0.7rem;font-weight:700;background:rgba(232,168,74,0.15);color:var(--amber);padding:3px 8px;border-radius:10px;border:1px solid rgba(232,168,74,0.3);}
+.note-item{padding:11px 14px;border-bottom:1px solid var(--border);font-size:0.82rem;line-height:1.55;color:var(--text);white-space:pre-wrap;}
+.note-item:last-child{border-bottom:none;}
+.note-item.type-warning{border-left:3px solid var(--red);color:#f0c8b8;}
+.note-item.type-info{border-left:3px solid var(--green);}
+.note-item.type-special{border-left:3px solid var(--purple);color:#d0c8f0;}
+.note-item.type-bonus{border-left:3px solid var(--teal);color:#c0eae4;}
+.card.special-card{background:#131120;border-color:#2e2a50;}
+.card.bonus-card{background:#0f1f1e;border-color:#1e3835;}
+.day-nav{display:flex;justify-content:space-between;padding:4px 0 16px;gap:10px;}
+.nav-btn{flex:1;background:var(--card2);border:1px solid var(--border2);color:var(--text2);font-size:0.82rem;font-weight:600;padding:10px 14px;border-radius:12px;cursor:pointer;text-align:center;}
+.nav-btn:active{background:var(--border2);}
+.nav-btn:disabled{opacity:0.3;cursor:default;}
 
-  .info-block{padding:12px 14px;}
-  .info-name{font-size:0.95rem;font-weight:700;color:var(--text);}
-  .info-addr{font-size:0.77rem;color:var(--text2);margin-top:2px;font-style:italic;}
-  .info-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center;}
-  .phone-link{display:inline-flex;align-items:center;gap:4px;color:var(--green2);font-size:0.8rem;text-decoration:none;background:rgba(90,158,106,0.1);padding:4px 10px;border-radius:20px;border:1px solid rgba(90,158,106,0.2);}
-  .phone-link:active{background:rgba(90,158,106,0.22);}
-  .nights-badge{font-size:0.72rem;color:var(--text3);background:var(--bg3);padding:3px 8px;border-radius:10px;}
-  .res-badge{font-size:0.7rem;font-weight:700;background:rgba(232,168,74,0.15);color:var(--amber);padding:3px 8px;border-radius:10px;border:1px solid rgba(232,168,74,0.3);}
-
-  .note-item{padding:11px 14px;border-bottom:1px solid var(--border);font-size:0.82rem;line-height:1.55;color:var(--text);white-space:pre-wrap;}
-  .note-item:last-child{border-bottom:none;}
-  .note-item.type-warning{border-left:3px solid var(--red);color:#f0c8b8;}
-  .note-item.type-info{border-left:3px solid var(--green);}
-  .note-item.type-special{border-left:3px solid var(--purple);color:#d0c8f0;}
-  .note-item.type-bonus{border-left:3px solid var(--teal);color:#c0eae4;}
-
-  .card.special-card{background:#131120;border-color:#2e2a50;}
-  .card.bonus-card{background:#0f1f1e;border-color:#1e3835;}
-
-  .day-nav{display:flex;justify-content:space-between;padding:4px 0 16px;gap:10px;}
-  .nav-btn{flex:1;background:var(--card2);border:1px solid var(--border2);color:var(--text2);font-size:0.82rem;font-weight:600;padding:10px 14px;border-radius:12px;cursor:pointer;text-align:center;transition:all 0.15s;}
-  .nav-btn:active{background:var(--border2);}
-  .nav-btn:disabled{opacity:0.3;cursor:default;}
-
-  .ov-row{display:flex;align-items:stretch;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;margin-bottom:7px;}
-  .ov-row:active{opacity:0.75;}
-  .ov-date{background:var(--bg3);min-width:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 8px;border-right:1px solid var(--border);}
-  .ov-d{font-size:0.9rem;font-weight:800;color:var(--gold);}
-  .ov-m{font-size:0.65rem;color:var(--text3);}
-  .ov-content{flex:1;padding:10px 12px;}
-  .ov-title{font-size:0.88rem;font-weight:700;color:var(--text);}
-  .ov-sub{font-size:0.74rem;color:var(--text2);margin-top:2px;}
-  .ov-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
-  .ov-tag{font-size:0.65rem;padding:2px 6px;border-radius:8px;font-weight:600;}
-  .tag-res{background:rgba(232,168,74,0.15);color:var(--amber);}
-  .tag-early{background:rgba(212,115,90,0.15);color:var(--red);}
-  .tag-cash{background:rgba(160,144,212,0.15);color:var(--purple);}
-  .tag-new{background:rgba(90,191,176,0.15);color:var(--teal);}
-  .tag-dau{background:rgba(160,144,212,0.15);color:var(--purple);}
+/* OVERVIEW */
+.ov-row{display:flex;align-items:stretch;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;margin-bottom:7px;}
+.ov-row:active{opacity:0.75;}
+.ov-date{background:var(--bg3);min-width:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 8px;border-right:1px solid var(--border);}
+.ov-d{font-size:0.9rem;font-weight:800;color:var(--gold);}
+.ov-m{font-size:0.65rem;color:var(--text3);}
+.ov-content{flex:1;padding:10px 12px;}
+.ov-title{font-size:0.88rem;font-weight:700;color:var(--text);}
+.ov-sub{font-size:0.74rem;color:var(--text2);margin-top:2px;}
+.ov-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
+.ov-tag{font-size:0.65rem;padding:2px 6px;border-radius:8px;font-weight:600;}
+.tag-res{background:rgba(232,168,74,0.15);color:var(--amber);}
+.tag-early{background:rgba(212,115,90,0.15);color:var(--red);}
+.tag-cash{background:rgba(160,144,212,0.15);color:var(--purple);}
+.tag-new{background:rgba(90,191,176,0.15);color:var(--teal);}
+.tag-dau{background:rgba(160,144,212,0.15);color:var(--purple);}
 </style>
 </head>
 <body>
@@ -125,7 +134,7 @@
   <h2>Schottland 2026</h2>
   <p>Bitte Passwort eingeben</p>
   <input id="pw-in" type="password" placeholder="Passwort" autocomplete="off" onkeydown="if(event.key==='Enter')chk()">
-  <button onclick="chk()">Weiter &#x2192;</button>
+  <button id="pw-btn" onclick="chk()">Weiter &#x2192;</button>
   <div id="pw-err"></div>
 </div>
 <script>
@@ -133,8 +142,8 @@
   if(localStorage.getItem('sc26')==='1'){document.getElementById('pw').style.display='none';}
   window.chk=function(){
     var v=document.getElementById('pw-in').value.trim().toLowerCase();
-    if(v==='easygoing'){localStorage.setItem('sc26','1');document.getElementById('pw').style.display='none';}
-    else{var i=document.getElementById('pw-in');i.classList.remove('shake');void i.offsetWidth;i.classList.add('shake');document.getElementById('pw-err').textContent="Falsches Passwort – versuch's nochmal!";i.value='';}
+    if(v==='easygoing'){localStorage.setItem('sc26','1');document.getElementById('pw').style.display='none';initFirstMap();}
+    else{var i=document.getElementById('pw-in');i.classList.remove('shake');void i.offsetWidth;i.classList.add('shake');document.getElementById('pw-err').textContent="Falsches Passwort!";i.value='';}
   };
 })();
 </script>
@@ -147,146 +156,287 @@
 <div class="tab-nav" id="tabNav"></div>
 <div id="root"></div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 var days=[
-{id:0,short:"24/5",dayLabel:"So",name:"Ankunft",headline:"Ankunft Edinburgh",route:"Edinburgh Airport → Tram Linie 1 → Chesser Crescent",dateStr:"Sonntag, 24. Mai 2026",
-stops:[
-{icon:"&#x2708;&#xFE0F;",name:"Edinburgh Airport",note:"Ankunft &middot; Gep&auml;ck holen",map:"https://maps.google.com/?cid=1824813430506378651"},
-{icon:"&#x1F68A;",name:"Tram Linie 1",note:"Richtung Innenstadt &rarr; ca. 35 Min, &pound;8.50 p.P.",map:"https://www.google.com/maps/search/?api=1&query=Edinburgh+Tram+Airport+Station"},
-{icon:"&#x1F3D8;&#xFE0F;",name:"86/7 Chesser Crescent",note:"Airbnb Edinburgh &middot; EH14 1SE",map:"https://maps.google.com/?q=86+Chesser+Crescent+Edinburgh+EH14+1SE"},
-],
-stay:{name:"Airbnb Edinburgh",addr:"86/7 Chesser Crescent, EH14 1SE",nights:"24&#x2013;26 Mai",map:"https://maps.google.com/?q=86+Chesser+Crescent+Edinburgh+EH14+1SE"},
-dinner:{name:"Offen &#x2013; Kandidaten",detail:"Montrose Wine Bar &middot; Paz Taqueria &middot; Noto",reserved:false,note:"Noch keine Reservierung!"},
-notes:[{type:"info",text:"&#x1F68A; Tram Linie 1 direkt vom Airport: ca. 35 Min. Tickets am Automaten kaufen."}]},
+{id:0,short:"24/5",dayLabel:"So",name:"Ankunft",
+ headline:"Ankunft Edinburgh",
+ route:"Edinburgh Airport &rarr; Tram Linie 1 &rarr; Chesser Crescent",
+ dateStr:"Sonntag, 24. Mai 2026",
+ mapCoords:[
+  {lat:55.950,lng:-3.372,label:"&#x2708; Edinburgh Airport"},
+  {lat:55.928,lng:-3.237,label:"&#x1F3D8; Chesser Crescent (Airbnb)"}
+ ],mapCenter:[55.939,-3.305],mapZoom:12,
+ stops:[
+  {icon:"&#x2708;&#xFE0F;",name:"Edinburgh Airport",note:"Ankunft &middot; Gep&auml;ck holen",map:"https://maps.google.com/?cid=1824813430506378651"},
+  {icon:"&#x1F68A;",name:"Tram Linie 1",note:"Richtung Innenstadt &rarr; ca. 35 Min, &pound;8.50 p.P.",map:"https://www.google.com/maps/search/?api=1&query=Edinburgh+Tram+Airport+Station"},
+  {icon:"&#x1F3D8;&#xFE0F;",name:"86/7 Chesser Crescent",note:"Airbnb Edinburgh &middot; EH14 1SE",map:"https://maps.google.com/?q=86+Chesser+Crescent+Edinburgh+EH14+1SE"}
+ ],
+ stay:{name:"Airbnb Edinburgh",addr:"86/7 Chesser Crescent, EH14 1SE",nights:"24&#x2013;26 Mai",map:"https://maps.google.com/?q=86+Chesser+Crescent+Edinburgh+EH14+1SE"},
+ dinner:{name:"Offen &#x2013; Kandidaten",detail:"Montrose Wine Bar &middot; Paz Taqueria &middot; Noto",reserved:false},
+ notes:[{type:"info",text:"&#x1F68A; Tram Linie 1 direkt vom Airport: ca. 35 Min. Tickets am Automaten kaufen."}]},
 
-{id:1,short:"25/5",dayLabel:"Mo",name:"Edinburgh",headline:"Edinburgh Sightseeing",route:"Edinburgh Castle &middot; Royal Mile &middot; Arthur's Seat",dateStr:"Montag, 25. Mai 2026",
-stops:[
-{icon:"&#x1F3F0;",name:"Edinburgh Castle",note:"Tickets VORBUCHEN! &middot; 09:30 Uhr",time:"09:30",map:"https://maps.google.com/?cid=5087412727581510232"},
-{icon:"&#x1F6B6;",name:"Royal Mile",note:"Historische Altstadt-Promenade",map:"https://www.google.com/maps/search/?api=1&query=Royal+Mile+Edinburgh"},
-{icon:"&#x1F3DB;&#xFE0F;",name:"Palace of Holyroodhouse",note:"K&ouml;niglicher Palast am Ende der Royal Mile",map:"https://www.google.com/maps/search/?api=1&query=Palace+of+Holyroodhouse+Edinburgh"},
-{icon:"&#x26F0;&#xFE0F;",name:"Arthur's Seat",note:"Erloschener Vulkan &middot; 251m &middot; 45&#x2013;60 Min Aufstieg",map:"https://maps.google.com/?cid=2416821580808277232"},
-],
-stay:{name:"Airbnb Edinburgh",addr:"86/7 Chesser Crescent, EH14 1SE",nights:"24&#x2013;26 Mai",map:"https://maps.google.com/?q=86+Chesser+Crescent+Edinburgh+EH14+1SE"},
-dinner:{name:"Offen &#x2013; Kandidaten",detail:"Montrose Wine Bar &middot; Paz Taqueria &middot; Noto",reserved:false},
-notes:[{type:"warning",text:"&#x26A0;&#xFE0F; JETZT BUCHEN: Edinburgh Castle Tickets online reservieren &#x2013; online g&uuml;nstiger &amp; kein Warteschlangen-Stress!"}]},
+{id:1,short:"25/5",dayLabel:"Mo",name:"Edinburgh",
+ headline:"Edinburgh Sightseeing",
+ route:"Edinburgh Castle &middot; Royal Mile &middot; Holyroodhouse &middot; Arthur's Seat",
+ dateStr:"Montag, 25. Mai 2026",
+ mapCoords:[
+  {lat:55.9486,lng:-3.1999,label:"&#x1F3F0; Edinburgh Castle"},
+  {lat:55.9495,lng:-3.1908,label:"&#x1F6B6; Royal Mile"},
+  {lat:55.9521,lng:-3.1720,label:"&#x1F3DB; Palace of Holyroodhouse"},
+  {lat:55.9444,lng:-3.1615,label:"&#x26F0; Arthur's Seat"}
+ ],mapCenter:[55.949,-3.178],mapZoom:14,
+ stops:[
+  {icon:"&#x1F3F0;",name:"Edinburgh Castle",note:"Tickets VORBUCHEN! &middot; 09:30 Uhr",time:"09:30",map:"https://maps.google.com/?cid=5087412727581510232"},
+  {icon:"&#x1F6B6;",name:"Royal Mile",note:"Historische Altstadt-Promenade",map:"https://www.google.com/maps/search/?api=1&query=Royal+Mile+Edinburgh"},
+  {icon:"&#x1F3DB;&#xFE0F;",name:"Palace of Holyroodhouse",note:"K&ouml;niglicher Palast am Ende der Royal Mile",map:"https://www.google.com/maps/search/?api=1&query=Palace+of+Holyroodhouse+Edinburgh"},
+  {icon:"&#x26F0;&#xFE0F;",name:"Arthur's Seat",note:"Erloschener Vulkan &middot; 251m &middot; 45&#x2013;60 Min Aufstieg",map:"https://maps.google.com/?cid=2416821580808277232"}
+ ],
+ stay:{name:"Airbnb Edinburgh",addr:"86/7 Chesser Crescent, EH14 1SE",nights:"24&#x2013;26 Mai",map:"https://maps.google.com/?q=86+Chesser+Crescent+Edinburgh+EH14+1SE"},
+ dinner:{name:"Offen &#x2013; Kandidaten",detail:"Montrose Wine Bar &middot; Paz Taqueria &middot; Noto",reserved:false},
+ notes:[{type:"warning",text:"&#x26A0;&#xFE0F; JETZT BUCHEN: Edinburgh Castle Tickets online reservieren!"}]},
 
-{id:2,short:"26/5",dayLabel:"Di",name:"&#x2192; Garvault",headline:"Edinburgh &#x2192; Kinbrace",route:"Europcar &#x2192; Culloden &#x2694;&#xFE0F; &#x2192; Dunrobin Castle &#x1F985; &#x2192; Garvault",dateStr:"Dienstag, 26. Mai 2026",
-stops:[
-{icon:"&#x1F697;",name:"Europcar Edinburgh St James",note:"Auto abholen &middot; dann Richtung Norden A9",map:"https://maps.google.com/?cid=9045101719331601522"},
-{icon:"&#x2694;&#xFE0F;",name:"Culloden Battlefield",note:"Mit Tochter! &middot; Schicksalsschlacht 1746 &middot; Visitor Centre empfohlen &middot; ca. 1 Std",time:"ca. 1 Std",map:"https://www.google.com/maps/search/?api=1&query=Culloden+Battlefield+Visitor+Centre+Inverness",isNew:true},
-{icon:"&#x1F3F0;",name:"Dunrobin Castle",note:"Falknerei-Show 11:30 oder 14:00 Uhr &middot; m&auml;rchenhaftes Schloss",time:"11:30 / 14:00",map:"https://maps.google.com/?cid=10863285899962133439"},
-{icon:"&#x1F3E1;",name:"The Garvault, Kinbrace",note:"Abendessen &amp; &Uuml;bernachtung &#x2013; entlegenste Pub Schottlands!",map:"https://maps.google.com/?cid=11176350489832942980"},
-],
-stay:{name:"The Garvault",addr:"Kinbrace, Sutherland",phone:"+44 7596 202171",nights:"26&#x2013;27 Mai",map:"https://maps.google.com/?cid=11176350489832942980"},
-dinner:{name:"Garvault House &#x2013; Table d'h&ocirc;te",reserved:true,phone:"+44 7596 202171",map:"https://maps.google.com/?cid=11176350489832942980"},
-notes:[
-{type:"bonus",text:"&#x2694;&#xFE0F; CULLODEN (neu!): Schottlands emotionalste St&auml;tte &#x2013; hier endete 1746 die letzte Landschlacht Gro&szlig;britanniens. Mit Tochter dabei! NTS Visitor Centre ist hervorragend."},
-{type:"info",text:"&#x1F985; Dunrobin Falknerei: Je nach Ankunftszeit 11:30 oder 14:00 Uhr einplanen."}]},
+{id:2,short:"26/5",dayLabel:"Di",name:"&rarr; Garvault",
+ headline:"Edinburgh &rarr; Kinbrace",
+ route:"Europcar &rarr; Culloden &#x2694; &rarr; Dunrobin Castle &rarr; Garvault",
+ dateStr:"Dienstag, 26. Mai 2026",
+ mapCoords:[
+  {lat:55.956,lng:-3.189,label:"&#x1F697; Europcar Edinburgh"},
+  {lat:57.477,lng:-4.078,label:"&#x2694; Culloden Battlefield"},
+  {lat:57.987,lng:-3.925,label:"&#x1F3F0; Dunrobin Castle"},
+  {lat:58.250,lng:-3.783,label:"&#x1F3E1; The Garvault"}
+ ],mapCenter:[57.2,-3.8],mapZoom:7,
+ stops:[
+  {icon:"&#x1F697;",name:"Europcar Edinburgh St James",note:"Auto abholen",map:"https://maps.google.com/?cid=9045101719331601522"},
+  {icon:"&#x2694;&#xFE0F;",name:"Culloden Battlefield",note:"Mit Tochter! &middot; Schicksalsschlacht 1746 &middot; ca. 1 Std",time:"ca. 1 Std",map:"https://www.google.com/maps/search/?api=1&query=Culloden+Battlefield+Visitor+Centre+Inverness",isNew:true},
+  {icon:"&#x1F3F0;",name:"Dunrobin Castle",note:"Falknerei-Show 11:30 oder 14:00 Uhr",time:"11:30/14:00",map:"https://maps.google.com/?cid=10863285899962133439"},
+  {icon:"&#x1F3E1;",name:"The Garvault, Kinbrace",note:"Entlegenste Pub Schottlands!",map:"https://maps.google.com/?cid=11176350489832942980"}
+ ],
+ stay:{name:"The Garvault",addr:"Kinbrace, Sutherland",phone:"+44 7596 202171",nights:"26&#x2013;27 Mai",map:"https://maps.google.com/?cid=11176350489832942980"},
+ dinner:{name:"Garvault House &#x2013; Table d'h&ocirc;te",reserved:true,phone:"+44 7596 202171",map:"https://maps.google.com/?cid=11176350489832942980"},
+ notes:[
+  {type:"bonus",text:"&#x2694;&#xFE0F; CULLODEN: Schottlands emotionalste St&auml;tte &#x2013; letzte Landschlacht Gro&szlig;britanniens 1746. Mit Tochter! NTS Visitor Centre ist hervorragend."},
+  {type:"info",text:"&#x1F985; Dunrobin Falknerei: 11:30 oder 14:00 Uhr je nach Ankunftszeit."}]},
 
-{id:3,short:"27/5",dayLabel:"Mi",name:"&#x2192; Borgie",headline:"Garvault &#x2192; Borgie Lodge",route:"A99 K&uuml;stenroute &middot; Duncansby Head &middot; Castle of Mey",dateStr:"Mittwoch, 27. Mai 2026",
-stops:[
-{icon:"&#x2693;",name:"Dunbeath Harbour",note:"Charmantes K&uuml;stenfischerdorf &middot; kurzer Stopp",map:"https://maps.google.com/?cid=7992098604536225948"},
-{icon:"&#x1F5FC;",name:"Duncansby Head Lighthouse",note:"Nordostspitze Schottlands &middot; dramatische Seestapel!",map:"https://maps.google.com/?cid=5269040198334098683"},
-{icon:"&#x1F451;",name:"Castle of Mey",note:"Mi&#x2013;So 11&#x2013;15 Uhr &middot; Residenz der K&ouml;nigin Mutter",time:"11:00&#x2013;15:00",map:"https://maps.google.com/?cid=12726618921070671692"},
-{icon:"&#x1F3E1;",name:"Borgie Lodge Hotel",note:"&Uuml;bernachtung",map:"https://maps.google.com/?cid=15034965686352943708"},
-],
-stay:{name:"Borgie Lodge Hotel",addr:"Tongue, Sutherland",phone:"+44 1641 521332",nights:"27&#x2013;28 Mai",map:"https://maps.google.com/?cid=15034965686352943708"},
-dinner:{name:"Borgie Lodge &#x2013; Dinner",time:"19:00",reserved:true,phone:"+44 1641 521332",detail:"Einfach hingehen &middot; Food bis 19:45 Uhr",map:"https://maps.google.com/?cid=15034965686352943708"},
-notes:[]},
+{id:3,short:"27/5",dayLabel:"Mi",name:"&rarr; Borgie",
+ headline:"Garvault &rarr; Borgie Lodge",
+ route:"A99 K&uuml;stenroute &middot; Duncansby Head &middot; Castle of Mey",
+ dateStr:"Mittwoch, 27. Mai 2026",
+ mapCoords:[
+  {lat:58.250,lng:-3.783,label:"&#x1F3E1; The Garvault"},
+  {lat:58.233,lng:-3.367,label:"&#x2693; Dunbeath Harbour"},
+  {lat:58.644,lng:-3.036,label:"&#x1F5FC; Duncansby Head"},
+  {lat:58.641,lng:-3.232,label:"&#x1F451; Castle of Mey"},
+  {lat:58.520,lng:-4.300,label:"&#x1F3E1; Borgie Lodge"}
+ ],mapCenter:[58.45,-3.5],mapZoom:9,
+ stops:[
+  {icon:"&#x2693;",name:"Dunbeath Harbour",note:"Charmantes K&uuml;stenfischerdorf",map:"https://maps.google.com/?cid=7992098604536225948"},
+  {icon:"&#x1F5FC;",name:"Duncansby Head Lighthouse",note:"Nordostspitze Schottlands &middot; dramatische Seestapel!",map:"https://maps.google.com/?cid=5269040198334098683"},
+  {icon:"&#x1F451;",name:"Castle of Mey",note:"Mi&#x2013;So 11&#x2013;15 Uhr &middot; Residenz der K&ouml;nigin Mutter",time:"11:00&#x2013;15:00",map:"https://maps.google.com/?cid=12726618921070671692"},
+  {icon:"&#x1F3E1;",name:"Borgie Lodge Hotel",note:"&Uuml;bernachtung",map:"https://maps.google.com/?cid=15034965686352943708"}
+ ],
+ stay:{name:"Borgie Lodge Hotel",addr:"Tongue, Sutherland",phone:"+44 1641 521332",nights:"27&#x2013;28 Mai",map:"https://maps.google.com/?cid=15034965686352943708"},
+ dinner:{name:"Borgie Lodge &#x2013; Dinner",time:"19:00",reserved:true,phone:"+44 1641 521332",detail:"Einfach hingehen &middot; Food bis 19:45",map:"https://maps.google.com/?cid=15034965686352943708"},
+ notes:[]},
 
-{id:4,short:"28/5",dayLabel:"Do",name:"&#x2192; Ullapool",headline:"Borgie &#x2192; Royal Hotel Ullapool",route:"Smoo Cave &middot; Kylesku Bridge &middot; Crofter's Kitchen",dateStr:"Donnerstag, 28. Mai 2026",
-stops:[
-{icon:"&#x1F987;",name:"Smoo Cave",note:"Bootstour &pound;15 in CASH! &middot; Dramatische Meeresk&ouml;hle bei Durness",map:"https://maps.google.com/?cid=10740923756126077044"},
-{icon:"&#x1F309;",name:"Kylesku Bridge",note:"Ikonische Bogenbrücke am Fjord",map:"https://maps.google.com/?cid=5861531471428361824"},
-{icon:"&#x1F37D;&#xFE0F;",name:"Crofter's Kitchen Scourie",note:"Mittagessen &middot; Mo&#x2013;Sa 12&#x2013;19 Uhr",time:"12:00&#x2013;19:00",map:"https://maps.google.com/?cid=1136022616857616023"},
-{icon:"&#x1F3E8;",name:"Royal Hotel Ullapool",note:"&Uuml;bernachtung &middot; direkt am Loch Broom",map:"https://maps.google.com/?cid=16149274775478265824"},
-],
-stay:{name:"Royal Hotel Ullapool",addr:"Ullapool",phone:"+44 1854 612181",nights:"28&#x2013;29 Mai",map:"https://maps.google.com/?cid=16149274775478265824"},
-dinner:{name:"The Seaforth Ullapool",time:"19:30",reserved:true,phone:"+44 1854 612122",detail:"3 Personen &middot; Reserviert auf 'Maurus vom Scheidt'",map:"https://www.google.com/maps/search/?api=1&query=The+Seaforth+Ullapool"},
-notes:[{type:"warning",text:"&#x1F4B0; CASH! Smoo Cave Bootstour: &pound;15 p.P. in CASH &#x2192; F&uuml;r 3 Personen: &pound;45 bereithalten!"}]},
+{id:4,short:"28/5",dayLabel:"Do",name:"&rarr; Ullapool",
+ headline:"Borgie &rarr; Royal Hotel Ullapool",
+ route:"Smoo Cave &middot; Kylesku Bridge &middot; Crofter's Kitchen",
+ dateStr:"Donnerstag, 28. Mai 2026",
+ mapCoords:[
+  {lat:58.520,lng:-4.300,label:"&#x1F3E1; Borgie Lodge"},
+  {lat:58.567,lng:-4.725,label:"&#x1F987; Smoo Cave"},
+  {lat:58.258,lng:-5.017,label:"&#x1F309; Kylesku Bridge"},
+  {lat:58.349,lng:-5.153,label:"&#x1F37D; Crofter's Kitchen"},
+  {lat:57.896,lng:-5.160,label:"&#x1F3E8; Royal Hotel Ullapool"}
+ ],mapCenter:[58.2,-5.0],mapZoom:8,
+ stops:[
+  {icon:"&#x1F987;",name:"Smoo Cave",note:"Bootstour &pound;15 in CASH! &middot; Meeresh&ouml;hle",map:"https://maps.google.com/?cid=10740923756126077044"},
+  {icon:"&#x1F309;",name:"Kylesku Bridge",note:"Ikonische Bogenbrücke am Fjord",map:"https://maps.google.com/?cid=5861531471428361824"},
+  {icon:"&#x1F37D;&#xFE0F;",name:"Crofter's Kitchen Scourie",note:"Mittagessen &middot; Mo&#x2013;Sa 12&#x2013;19 Uhr",time:"12:00&#x2013;19:00",map:"https://maps.google.com/?cid=1136022616857616023"},
+  {icon:"&#x1F3E8;",name:"Royal Hotel Ullapool",note:"&Uuml;bernachtung",map:"https://maps.google.com/?cid=16149274775478265824"}
+ ],
+ stay:{name:"Royal Hotel Ullapool",addr:"Ullapool",phone:"+44 1854 612181",nights:"28&#x2013;29 Mai",map:"https://maps.google.com/?cid=16149274775478265824"},
+ dinner:{name:"The Seaforth Ullapool",time:"19:30",reserved:true,phone:"+44 1854 612122",detail:"3 Personen &middot; Reserviert auf 'Maurus vom Scheidt'",map:"https://www.google.com/maps/search/?api=1&query=The+Seaforth+Ullapool"},
+ notes:[{type:"warning",text:"&#x1F4B0; CASH! Smoo Cave: &pound;15 p.P. &rarr; f&uuml;r 3 Personen &pound;45 bereithalten!"}]},
 
-{id:5,short:"29/5",dayLabel:"Fr",name:"&#x2192; Lochailort",headline:"Ullapool &#x2192; Lochailort Inn",route:"A832 K&uuml;ste &middot; Inverewe &middot; Torridon &middot; Bealach na B&agrave; &middot; Applecross",dateStr:"Freitag, 29. Mai 2026",
-stops:[
-{icon:"&#x1F30A;",name:"Gruinard Bay Viewpoint",note:"Atemberaubende Bucht &middot; kurzer Fotostop",map:"https://maps.google.com/?cid=13660874225856890257"},
-{icon:"&#x26F0;&#xFE0F;",name:"Torridon &#x2013; Beinn Eighe",note:"Option: kurzer Stopp &middot; dramatische Sandstein-Berge &middot; NNR",map:"https://www.google.com/maps/search/?api=1&query=Torridon+Visitor+Centre+Highland",isNew:true},
-{icon:"&#x1F331;",name:"Inverewe Garden",note:"Mi&#x2013;So 9:30&#x2013;17:00 &middot; Exotischer Garten direkt am Atlantik",time:"9:30&#x2013;17:00",map:"https://maps.google.com/?cid=7629117287810695932"},
-{icon:"&#x1F41F;",name:"Gairloch",note:"Mittagspause im Fischerdorf am Meer",map:"https://www.google.com/maps/search/?api=1&query=Gairloch+Highland+Scotland"},
-{icon:"&#x26F0;&#xFE0F;",name:"Bealach na B&agrave;",note:"626m Bergpass &#x2013; enge Serpentinen, atemberaubend!",map:"https://www.google.com/maps/search/?api=1&query=Bealach+na+Ba+Applecross+Pass"},
-{icon:"&#x1F37A;",name:"Applecross Inn",note:"Legend&auml;rer Pub nach dem Pass &middot; kurzer Stopp",map:"https://maps.google.com/?cid=15906095789396961159"},
-{icon:"&#x1F3E1;",name:"Lochailort Inn",note:"&Uuml;bernachtung",map:"https://maps.google.com/?cid=9626939877780191068"},
-],
-stay:{name:"Lochailort Inn",addr:"Lochailort, Highland",phone:"+44 1687 467197",nights:"29&#x2013;30 Mai",map:"https://maps.google.com/?cid=9626939877780191068"},
-dinner:{name:"Lochailort Inn &#x2013; Dinner",reserved:true,phone:"+44 1687 467197",map:"https://maps.google.com/?cid=9626939877780191068"},
-notes:[
-{type:"bonus",text:"&#x26F0;&#xFE0F; TORRIDON (Tipp!): Schottlands &auml;ltester Nationalpark. Sandstein-Berge bis 800m, Hirsche, Seeadler. Kurzer Stopp am Besucher-Zentrum lohnt sich!"},
-{type:"info",text:"&#x26F0;&#xFE0F; Bealach na B&agrave;: Sehr enge Bergstra&szlig;e &#x2013; langsam fahren. Der Ausblick auf die Hebriden am Gipfel ist unverge&szlig;lich!"}]},
+{id:5,short:"29/5",dayLabel:"Fr",name:"&rarr; Lochailort",
+ headline:"Ullapool &rarr; Lochailort Inn",
+ route:"Gruinard Bay &middot; Inverewe &middot; Torridon &middot; Bealach na B&agrave; &middot; Applecross",
+ dateStr:"Freitag, 29. Mai 2026",
+ mapCoords:[
+  {lat:57.896,lng:-5.160,label:"&#x1F3E8; Ullapool"},
+  {lat:57.850,lng:-5.467,label:"&#x1F30A; Gruinard Bay"},
+  {lat:57.550,lng:-5.500,label:"&#x26F0; Torridon"},
+  {lat:57.784,lng:-5.603,label:"&#x1F331; Inverewe Garden"},
+  {lat:57.721,lng:-5.679,label:"&#x1F41F; Gairloch"},
+  {lat:57.417,lng:-5.650,label:"&#x26F0; Bealach na Ba"},
+  {lat:57.433,lng:-5.808,label:"&#x1F37A; Applecross Inn"},
+  {lat:56.867,lng:-5.650,label:"&#x1F3E1; Lochailort Inn"}
+ ],mapCenter:[57.4,-5.5],mapZoom:8,
+ stops:[
+  {icon:"&#x1F30A;",name:"Gruinard Bay Viewpoint",note:"Atemberaubende Bucht",map:"https://maps.google.com/?cid=13660874225856890257"},
+  {icon:"&#x26F0;&#xFE0F;",name:"Torridon &#x2013; Beinn Eighe",note:"Schottlands &auml;ltester Nationalpark &middot; Sandstein-Berge",map:"https://www.google.com/maps/search/?api=1&query=Torridon+Visitor+Centre+Highland",isNew:true},
+  {icon:"&#x1F331;",name:"Inverewe Garden",note:"Mi&#x2013;So 9:30&#x2013;17:00 &middot; Exotischer Atlantik-Garten",time:"9:30&#x2013;17:00",map:"https://maps.google.com/?cid=7629117287810695932"},
+  {icon:"&#x1F41F;",name:"Gairloch",note:"Mittagspause im Fischerdorf",map:"https://www.google.com/maps/search/?api=1&query=Gairloch+Highland+Scotland"},
+  {icon:"&#x26F0;&#xFE0F;",name:"Bealach na B&agrave;",note:"626m Bergpass &#x2013; enge Serpentinen!",map:"https://www.google.com/maps/search/?api=1&query=Bealach+na+Ba+Applecross+Pass"},
+  {icon:"&#x1F37A;",name:"Applecross Inn",note:"Legend&auml;rer Pub nach dem Pass",map:"https://maps.google.com/?cid=15906095789396961159"},
+  {icon:"&#x1F3E1;",name:"Lochailort Inn",note:"&Uuml;bernachtung",map:"https://maps.google.com/?cid=9626939877780191068"}
+ ],
+ stay:{name:"Lochailort Inn",addr:"Lochailort, Highland",phone:"+44 1687 467197",nights:"29&#x2013;30 Mai",map:"https://maps.google.com/?cid=9626939877780191068"},
+ dinner:{name:"Lochailort Inn &#x2013; Dinner",reserved:true,phone:"+44 1687 467197",map:"https://maps.google.com/?cid=9626939877780191068"},
+ notes:[
+  {type:"bonus",text:"&#x26F0;&#xFE0F; TORRIDON: Beinn Eighe ist Schottlands &auml;ltester Nationalpark. Dramatische Sandstein-Berge, Hirsche, Seeadler."},
+  {type:"info",text:"&#x26F0;&#xFE0F; Bealach na B&agrave;: Sehr enge Bergstra&szlig;e &#x2013; langsam fahren. Ausblick auf die Hebriden unverge&szlig;lich!"}]},
 
-{id:6,short:"30/5",dayLabel:"Sa",name:"Jacobite",headline:"Jacobite Tag &#x2192; Skye",route:"Glenfinnan &middot; Fort William &middot; Plockton &middot; Eilean Donan &middot; Silverdale",dateStr:"Samstag, 30. Mai 2026",
-stops:[
-{icon:"&#x1F309;",name:"Glenfinnan Viaduct",note:"07:30 Uhr &#x2013; fr&uuml;h da sein! Harry-Potter-Viadukt",time:"07:30",map:"https://maps.google.com/?cid=17848749755060862951"},
-{icon:"&#x1F689;",name:"Fort William Bahnhof",note:"09:45 ankommen &middot; Tochter verabschieden",time:"09:45",map:"https://maps.google.com/?cid=11087917999249931494"},
-{icon:"&#x1F334;",name:"Plockton",note:"'Juwel der Highlands' &middot; tropische Palmen, bunter Hafen &middot; 20 Min Stopp",map:"https://www.google.com/maps/search/?api=1&query=Plockton+Ross-shire+Scotland",isNew:true},
-{icon:"&#x1F3F0;",name:"Eilean Donan Castle",note:"10&#x2013;17 Uhr &middot; Ber&uuml;hmteste Burg Schottlands &#x2705;",time:"10:00&#x2013;17:00",map:"https://maps.google.com/?cid=12908316640893953491"},
-{icon:"&#x1F3E1;",name:"Silverdale Skye B&amp;B",note:"Jeni &middot; 14 Skinidin, Dunvegan &middot; Ankunft",map:"https://maps.google.com/?cid=18224620871467556881"},
-],
-stay:{name:"Silverdale Skye B&amp;B",addr:"14 Skinidin, Dunvegan, IV55 8ZS",phone:"+44 1470 521251",host:"Jeni",nights:"30 Mai &#x2013; 3 Juni",map:"https://maps.google.com/?cid=18224620871467556881"},
-dinner:{name:"Old School Restaurant Dunvegan",reserved:true,phone:"+44 1470 521421",map:"https://maps.google.com/?cid=7215660508306731827"},
-special:{title:"&#x2708;&#xFE0F; Tochter &#x2013; Abflug Glasgow",text:"&#x1F682; ScotRail 11:40 Uhr Fort William &#x2192; Glasgow Central\n&#x2708;&#xFE0F; Abflug Glasgow 17:30 Uhr\n\nRechtzeitig zum Bahnhof! Check-in mind. 90 Min vorher."},
-bonus:{title:"&#x1F6F6; Alternative: Glenelg &amp; Kylerhea-F&auml;hre",text:"Statt Skye Bridge: Via Glenelg &#x2192; Kylerhea-F&auml;hre auf Skye (Apr&#x2013;Okt, ca. 10 Min &Uuml;berfahrt)\n\n&#x1F3D8;&#xFE0F; Glenelg: Pittoreskes Dorf + Brochs (Iron-Age-T&uuml;rme)\n&#x1F6E5;&#xFE0F; Kylerhea Ferry: Saisonbetrieb &middot; CalMac\n\n&#x2192; Ca. 30 Min Umweg aber einzigartig!",mapGlenelg:"https://www.google.com/maps/search/?api=1&query=Glenelg+Highland+Scotland",mapFerry:"https://www.google.com/maps/search/?api=1&query=Glenelg+Kylerhea+Ferry+Scotland"},
-notes:[{type:"info",text:"&#x1F682; JACOBITE STEAM TRAIN: Abfahrt 10:15 Fort William nach Tochter-Verabschiedung ODER direkt mit Auto &#x2192; Plockton &#x2192; Eilean Donan &#x2192; Skye."}]},
+{id:6,short:"30/5",dayLabel:"Sa",name:"Jacobite",
+ headline:"Jacobite Tag &rarr; Skye",
+ route:"Glenfinnan &middot; Fort William &middot; Plockton &middot; Eilean Donan &middot; Silverdale",
+ dateStr:"Samstag, 30. Mai 2026",
+ mapCoords:[
+  {lat:56.874,lng:-5.434,label:"&#x1F309; Glenfinnan Viaduct"},
+  {lat:56.820,lng:-5.105,label:"&#x1F689; Fort William"},
+  {lat:57.332,lng:-5.650,label:"&#x1F334; Plockton"},
+  {lat:57.273,lng:-5.515,label:"&#x1F3F0; Eilean Donan Castle"},
+  {lat:57.450,lng:-6.590,label:"&#x1F3E1; Silverdale Skye B&B"}
+ ],mapCenter:[57.0,-5.6],mapZoom:8,
+ stops:[
+  {icon:"&#x1F309;",name:"Glenfinnan Viaduct",note:"07:30 Uhr &#x2013; fr&uuml;h da sein!",time:"07:30",map:"https://maps.google.com/?cid=17848749755060862951"},
+  {icon:"&#x1F689;",name:"Fort William Bahnhof",note:"09:45 &middot; Tochter verabschieden",time:"09:45",map:"https://maps.google.com/?cid=11087917999249931494"},
+  {icon:"&#x1F334;",name:"Plockton",note:"'Juwel der Highlands' &middot; tropische Palmen, bunter Hafen",map:"https://www.google.com/maps/search/?api=1&query=Plockton+Ross-shire+Scotland",isNew:true},
+  {icon:"&#x1F3F0;",name:"Eilean Donan Castle",note:"10&#x2013;17 Uhr &middot; Ber&uuml;hmteste Burg Schottlands &#x2705;",time:"10:00&#x2013;17:00",map:"https://maps.google.com/?cid=12908316640893953491"},
+  {icon:"&#x1F3E1;",name:"Silverdale Skye B&B",note:"Jeni &middot; 14 Skinidin, Dunvegan",map:"https://maps.google.com/?cid=18224620871467556881"}
+ ],
+ stay:{name:"Silverdale Skye B&B",addr:"14 Skinidin, Dunvegan, IV55 8ZS",phone:"+44 1470 521251",host:"Jeni",nights:"30 Mai &#x2013; 3 Juni",map:"https://maps.google.com/?cid=18224620871467556881"},
+ dinner:{name:"Old School Restaurant Dunvegan",reserved:true,phone:"+44 1470 521421",map:"https://maps.google.com/?cid=7215660508306731827"},
+ special:{title:"&#x2708;&#xFE0F; Tochter &#x2013; Abflug Glasgow",text:"&#x1F682; ScotRail 11:40 Uhr Fort William &rarr; Glasgow Central\n&#x2708;&#xFE0F; Abflug Glasgow 17:30 Uhr\n\nRechtzeitig zum Bahnhof! Check-in mind. 90 Min vorher."},
+ bonus:{title:"&#x1F6F6; Alternative: Glenelg &amp; Kylerhea-F&auml;hre",text:"Statt Skye Bridge: Via Glenelg &rarr; Kylerhea-F&auml;hre (Apr&#x2013;Okt, 10 Min &Uuml;berfahrt)\n&#x1F3D8; Glenelg: Pittoreskes Dorf + Brochs (Iron-Age-T&uuml;rme)\n\n&rarr; Ca. 30 Min Umweg aber einzigartig!",mapGlenelg:"https://www.google.com/maps/search/?api=1&query=Glenelg+Highland+Scotland",mapFerry:"https://www.google.com/maps/search/?api=1&query=Glenelg+Kylerhea+Ferry+Scotland"},
+ notes:[{type:"info",text:"&#x1F682; JACOBITE STEAM TRAIN: Abfahrt 10:15 Fort William ODER direkt mit Auto &rarr; Plockton &rarr; Eilean Donan &rarr; Skye."}]},
 
-{id:7,short:"31/5",dayLabel:"So",name:"Skye Nord",headline:"Nord&ouml;stliches Skye",route:"Old Man of Storr &middot; Kilt Rock &middot; Quiraing &middot; Portree",dateStr:"Sonntag, 31. Mai 2026",
-stops:[
-{icon:"&#x1F9D9;",name:"Old Man of Storr",note:"06:30 FR&Uuml;H! &#x2013; vor den Massen &middot; Parkplatz wird voll",time:"06:30",map:"https://maps.google.com/?cid=7577458695647467797"},
-{icon:"&#x1F30A;",name:"Kilt Rock &amp; Mealt Falls",note:"Basaltkliffs &middot; Wasserfall f&auml;llt ins Meer",map:"https://maps.google.com/?cid=7059321755008833655"},
-{icon:"&#x26F0;&#xFE0F;",name:"Quiraing",note:"Mystische Fels- und Tafelberg-Landschaft",map:"https://maps.google.com/?cid=9347035385775449479"},
-{icon:"&#x1F3D8;&#xFE0F;",name:"Portree",note:"Hauptort von Skye &middot; bunter Hafen &middot; Mittagessen",map:"https://www.google.com/maps/search/?api=1&query=Portree+Isle+of+Skye",isNew:true},
-],
-stay:{name:"Silverdale Skye B&amp;B",addr:"14 Skinidin, Dunvegan, IV55 8ZS",phone:"+44 1470 521251",host:"Jeni",nights:"30 Mai &#x2013; 3 Juni",map:"https://maps.google.com/?cid=18224620871467556881"},
-dinner:{name:"Selbst kochen im Cottage &#x1F373;",reserved:false},
-notes:[
-{type:"info",text:"&#x23F0; Old Man of Storr um 06:30: Nur so habt ihr den Ort f&uuml;r euch! Parkplatz um 9 Uhr bereits voll."},
-{type:"info",text:"&#x1F3D8;&#xFE0F; PORTREE: Empfohlen f&uuml;r Mittagessen &#x2013; bunter Hafen, gute Restaurants (Caf&eacute; Arriba, The Isles Inn)."}]},
+{id:7,short:"31/5",dayLabel:"So",name:"Skye Nord",
+ headline:"Nord&ouml;stliches Skye",
+ route:"Old Man of Storr &middot; Kilt Rock &middot; Quiraing &middot; Portree",
+ dateStr:"Sonntag, 31. Mai 2026",
+ mapCoords:[
+  {lat:57.502,lng:-6.183,label:"&#x1F9D9; Old Man of Storr"},
+  {lat:57.567,lng:-6.167,label:"&#x1F30A; Kilt Rock"},
+  {lat:57.633,lng:-6.267,label:"&#x26F0; Quiraing"},
+  {lat:57.412,lng:-6.195,label:"&#x1F3D8; Portree"}
+ ],mapCenter:[57.53,-6.21],mapZoom:11,
+ stops:[
+  {icon:"&#x1F9D9;",name:"Old Man of Storr",note:"06:30 FR&Uuml;H! &#x2013; vor den Massen",time:"06:30",map:"https://maps.google.com/?cid=7577458695647467797"},
+  {icon:"&#x1F30A;",name:"Kilt Rock &amp; Mealt Falls",note:"Basaltkliffs &middot; Wasserfall ins Meer",map:"https://maps.google.com/?cid=7059321755008833655"},
+  {icon:"&#x26F0;&#xFE0F;",name:"Quiraing",note:"Mystische Fels- und Tafelberg-Landschaft",map:"https://maps.google.com/?cid=9347035385775449479"},
+  {icon:"&#x1F3D8;&#xFE0F;",name:"Portree",note:"Hauptort Skyes &middot; bunter Hafen &middot; Mittagessen",map:"https://www.google.com/maps/search/?api=1&query=Portree+Isle+of+Skye",isNew:true}
+ ],
+ stay:{name:"Silverdale Skye B&B",addr:"14 Skinidin, Dunvegan, IV55 8ZS",phone:"+44 1470 521251",host:"Jeni",nights:"30 Mai &#x2013; 3 Juni",map:"https://maps.google.com/?cid=18224620871467556881"},
+ dinner:{name:"Selbst kochen im Cottage &#x1F373;",reserved:false},
+ notes:[
+  {type:"info",text:"&#x23F0; Old Man of Storr um 06:30: Nur so habt ihr den Ort f&uuml;r euch! Parkplatz um 9 Uhr voll."},
+  {type:"info",text:"&#x1F3D8; PORTREE: Bunter Hafen, empfohlen f&uuml;r Mittagessen (Caf&eacute; Arriba, The Isles Inn)."}]},
 
-{id:8,short:"1/6",dayLabel:"Mo",name:"Skye West",headline:"Westliches Skye",route:"Neist Point &middot; Fairy Pools &middot; Sligachan &middot; Three Chimneys &middot; Dunvegan Castle",dateStr:"Montag, 1. Juni 2026",
-stops:[
-{icon:"&#x1F526;",name:"Neist Point Lighthouse",note:"07:00 FR&Uuml;H! &#x2013; Westspitze Skyes &middot; oft Delfine &amp; Robben",time:"07:00",map:"https://maps.google.com/?cid=8715940865998568483"},
-{icon:"&#x1F9DA;",name:"Fairy Pools",note:"T&uuml;rkisfarbene Gebirgsseen unter den Black Cuillins",map:"https://maps.google.com/?cid=9136600304084382077"},
-{icon:"&#x26F0;&#xFE0F;",name:"Sligachan",note:"Alte Steinbr&uuml;cke &middot; Cuillin-Panorama &middot; kurzer Stopp",map:"https://www.google.com/maps/search/?api=1&query=Sligachan+Bridge+Isle+of+Skye",isNew:true},
-{icon:"&#x1F37D;&#xFE0F;",name:"Three Chimneys, Colbost",note:"Lunch 12:30 &middot; RESERVIERT &middot; eines der besten Restaurants Schottlands",time:"12:30",map:"https://maps.google.com/?cid=17177811452287819148"},
-{icon:"&#x1F3F0;",name:"Dunvegan Castle",note:"10&#x2013;17 Uhr &middot; &Auml;lteste bewohnte Burg Schottlands",time:"10:00&#x2013;17:00",map:"https://maps.google.com/?cid=1541086279549657026"},
-],
-stay:{name:"Silverdale Skye B&amp;B",addr:"14 Skinidin, Dunvegan, IV55 8ZS",phone:"+44 1470 521251",host:"Jeni",nights:"30 Mai &#x2013; 3 Juni",map:"https://maps.google.com/?cid=18224620871467556881"},
-dinner:{name:"Three Chimneys (Lunch) &middot; Abends frei",reserved:false},
-notes:[
-{type:"warning",text:"&#x1F37D;&#xFE0F; THREE CHIMNEYS LUNCH 12:30 &#x2013; RESERVIERT! P&uuml;nktlich sein!"},
-{type:"info",text:"&#x1F42C; Neist Point um 07:00: Delfine, Robben und im Sommer Wale m&ouml;glich!"}]},
+{id:8,short:"1/6",dayLabel:"Mo",name:"Skye West",
+ headline:"Westliches Skye",
+ route:"Neist Point &middot; Fairy Pools &middot; Sligachan &middot; Three Chimneys &middot; Dunvegan Castle",
+ dateStr:"Montag, 1. Juni 2026",
+ mapCoords:[
+  {lat:57.424,lng:-6.787,label:"&#x1F526; Neist Point"},
+  {lat:57.250,lng:-6.225,label:"&#x1F9DA; Fairy Pools"},
+  {lat:57.293,lng:-6.182,label:"&#x26F0; Sligachan"},
+  {lat:57.467,lng:-6.668,label:"&#x1F37D; Three Chimneys"},
+  {lat:57.448,lng:-6.588,label:"&#x1F3F0; Dunvegan Castle"}
+ ],mapCenter:[57.38,-6.49],mapZoom:10,
+ stops:[
+  {icon:"&#x1F526;",name:"Neist Point Lighthouse",note:"07:00 FR&Uuml;H! &middot; Westspitze Skyes &middot; oft Delfine",time:"07:00",map:"https://maps.google.com/?cid=8715940865998568483"},
+  {icon:"&#x1F9DA;",name:"Fairy Pools",note:"T&uuml;rkisfarbene Gebirgsseen unter den Black Cuillins",map:"https://maps.google.com/?cid=9136600304084382077"},
+  {icon:"&#x26F0;&#xFE0F;",name:"Sligachan",note:"Alte Steinbr&uuml;cke &middot; Cuillin-Panorama",map:"https://www.google.com/maps/search/?api=1&query=Sligachan+Bridge+Isle+of+Skye",isNew:true},
+  {icon:"&#x1F37D;&#xFE0F;",name:"Three Chimneys, Colbost",note:"Lunch 12:30 &middot; RESERVIERT &middot; bestes Restaurant Skyes",time:"12:30",map:"https://maps.google.com/?cid=17177811452287819148"},
+  {icon:"&#x1F3F0;",name:"Dunvegan Castle",note:"10&#x2013;17 Uhr &middot; &Auml;lteste bewohnte Burg Schottlands",time:"10:00&#x2013;17:00",map:"https://maps.google.com/?cid=1541086279549657026"}
+ ],
+ stay:{name:"Silverdale Skye B&B",addr:"14 Skinidin, Dunvegan, IV55 8ZS",phone:"+44 1470 521251",host:"Jeni",nights:"30 Mai &#x2013; 3 Juni",map:"https://maps.google.com/?cid=18224620871467556881"},
+ dinner:{name:"Three Chimneys (Lunch) &middot; Abends frei",reserved:false},
+ notes:[
+  {type:"warning",text:"&#x1F37D; THREE CHIMNEYS LUNCH 12:30 &#x2013; RESERVIERT! P&uuml;nktlich sein!"},
+  {type:"info",text:"&#x1F42C; Neist Point um 07:00: Delfine, Robben und Wale m&ouml;glich!"}]},
 
-{id:9,short:"2/6",dayLabel:"Di",name:"Raasay",headline:"Skye &#x2013; Entspannung &amp; Raasay",route:"Coral Beach &middot; Raasay (Option!) &middot; Edinbane Inn &middot; Old School",dateStr:"Dienstag, 2. Juni 2026",
-stops:[
-{icon:"&#x1F41A;",name:"Coral Beach",note:"25 Min Spaziergang &middot; Muschelkorallen-Strand &middot; einzigartig auf Skye",map:"https://maps.google.com/?cid=3620254715093184466"},
-{icon:"&#x26F4;&#xFE0F;",name:"F&auml;hre nach Raasay",note:"Von Sconser (ca. 30 Min von Dunvegan) &middot; 25 Min &Uuml;berfahrt &middot; CalMac",map:"https://www.google.com/maps/search/?api=1&query=Sconser+Ferry+Terminal+Isle+of+Skye",isNew:true},
-{icon:"&#x1F943;",name:"Isle of Raasay Distillery",note:"raasay.com &middot; Tour &amp; Tasting &middot; einzige Destillerie der Insel",map:"https://www.google.com/maps/search/?api=1&query=Isle+of+Raasay+Distillery",isNew:true},
-{icon:"&#x1F37A;",name:"Edinbane Inn",note:"Mittagessen (wenn kein Raasay) &middot; Craft Beer &amp; Pub Food",map:"https://maps.google.com/?cid=1191901811458444635"},
-],
-stay:{name:"Silverdale Skye B&amp;B",addr:"14 Skinidin, Dunvegan, IV55 8ZS",phone:"+44 1470 521251",host:"Jeni",nights:"30 Mai &#x2013; 3 Juni",map:"https://maps.google.com/?cid=18224620871467556881"},
-dinner:{name:"Old School Restaurant Dunvegan",reserved:true,phone:"+44 1470 521421",map:"https://maps.google.com/?cid=7215660508306731827"},
-bonus:{title:"&#x26F4;&#xFE0F; Tagesausflug: Isle of Raasay",text:"Kleines Inseljuwel &ouml;stlich von Skye &#x2013; F&auml;hre von Sconser.\n\n&#x1F943; Isle of Raasay Distillery (raasay.com): F&uuml;hrung + Whisky-Tasting\n&#x1F98C; Wildnis: Rotwild, Wei&szlig;kopfseeadler\n\n&#x26F4;&#xFE0F; CalMac F&auml;hre: ab Sconser, ca. alle 2 Std., 25 Min Fahrt.\nTickets online vorbuchen!"},
-notes:[{type:"bonus",text:"&#x26F4;&#xFE0F; RAASAY (neu! &#x2013; sehr empfohlen!): F&auml;hre von Sconser &#x2013; Tickets bei CalMac online buchen!"}]},
+{id:9,short:"2/6",dayLabel:"Di",name:"Raasay",
+ headline:"Skye &#x2013; Entspannung &amp; Raasay",
+ route:"Coral Beach &middot; Raasay (Option!) &middot; Edinbane Inn &middot; Old School",
+ dateStr:"Dienstag, 2. Juni 2026",
+ mapCoords:[
+  {lat:57.468,lng:-6.610,label:"&#x1F41A; Coral Beach"},
+  {lat:57.352,lng:-6.100,label:"&#x26F4; Sconser F&auml;hre nach Raasay"},
+  {lat:57.383,lng:-6.067,label:"&#x1F943; Raasay Distillery"},
+  {lat:57.417,lng:-6.483,label:"&#x1F37A; Edinbane Inn"},
+  {lat:57.452,lng:-6.581,label:"&#x1F37D; Old School Restaurant"}
+ ],mapCenter:[57.42,-6.35],mapZoom:10,
+ stops:[
+  {icon:"&#x1F41A;",name:"Coral Beach",note:"25 Min Spaziergang &middot; Muschelkorallen-Strand",map:"https://maps.google.com/?cid=3620254715093184466"},
+  {icon:"&#x26F4;&#xFE0F;",name:"F&auml;hre nach Raasay",note:"Von Sconser (30 Min Fahrt) &middot; 25 Min &Uuml;berfahrt &middot; CalMac",map:"https://www.google.com/maps/search/?api=1&query=Sconser+Ferry+Terminal+Isle+of+Skye",isNew:true},
+  {icon:"&#x1F943;",name:"Isle of Raasay Distillery",note:"raasay.com &middot; Tour &amp; Tasting",map:"https://www.google.com/maps/search/?api=1&query=Isle+of+Raasay+Distillery",isNew:true},
+  {icon:"&#x1F37A;",name:"Edinbane Inn",note:"Mittagessen (wenn kein Raasay) &middot; Craft Beer",map:"https://maps.google.com/?cid=1191901811458444635"}
+ ],
+ stay:{name:"Silverdale Skye B&B",addr:"14 Skinidin, Dunvegan, IV55 8ZS",phone:"+44 1470 521251",host:"Jeni",nights:"30 Mai &#x2013; 3 Juni",map:"https://maps.google.com/?cid=18224620871467556881"},
+ dinner:{name:"Old School Restaurant Dunvegan",reserved:true,phone:"+44 1470 521421",map:"https://maps.google.com/?cid=7215660508306731827"},
+ bonus:{title:"&#x26F4;&#xFE0F; Tagesausflug: Isle of Raasay",text:"Kleines Inseljuwel &ouml;stlich von Skye &ndash; F&auml;hre von Sconser.\n\n&#x1F943; Isle of Raasay Distillery (raasay.com): F&uuml;hrung + Whisky-Tasting\n&#x1F98C; Wildnis: Rotwild, Wei&szlig;kopfseeadler\n\n&#x26F4; CalMac F&auml;hre ab Sconser, ca. alle 2 Std., 25 Min Fahrt.\nTickets online vorbuchen bei CalMac!"},
+ notes:[{type:"bonus",text:"&#x26F4; RAASAY (sehr empfohlen!): CalMac Tickets online buchen. Sconser ist ca. 30 Min von Dunvegan."}]},
 
-{id:10,short:"3/6",dayLabel:"Mi",name:"Heimreise",headline:"Heimreise M&uuml;nchen",route:"Skye &#x2192; Castle Stalker &#x2192; Glencoe &#x2192; Edinburgh Airport &#x2192; M&uuml;nchen",dateStr:"Mittwoch, 3. Juni 2026",
-stops:[
-{icon:"&#x1F305;",name:"Silverdale &#x2013; Fr&uuml;habfahrt",note:"Sp&auml;testens 09:00 Uhr losfahren!",map:"https://maps.google.com/?cid=18224620871467556881"},
-{icon:"&#x1F3F0;",name:"Castle Stalker / Loch Laich",note:"Kurzer Fotostop! &middot; Ikonische Wasserburg auf kleiner Insel &middot; A828 Appin",map:"https://www.google.com/maps/search/?api=1&query=Castle+Stalker+Appin+Argyll",isNew:true},
-{icon:"&#x26F0;&#xFE0F;",name:"Glencoe Viewpoint",note:"Letzter Stopp &#x2013; dramatischste Berglandschaft Schottlands",map:"https://maps.google.com/?cid=11335074517603380735"},
-{icon:"&#x1F697;",name:"Europcar Edinburgh St James",note:"Auto zur&uuml;ckgeben",map:"https://maps.google.com/?cid=9045101719331601522"},
-{icon:"&#x2708;&#xFE0F;",name:"Edinburgh Airport",note:"Abflug M&uuml;nchen 17:10 Uhr &#x2705;",time:"17:10",map:"https://maps.google.com/?cid=1824813430506378651"},
-],
-stay:null,dinner:null,
-bonus:{title:"&#x1F3F0; Castle Stalker &#x2013; Lohnt sich!",text:"Eines der fotogenischsten Schl&ouml;sser Schottlands &#x2013; Wasserburg auf einer winzigen Insel im Loch Laich. War im Monty Python-Film!\n\nNur 15 Min Fotostop an der A828 &#x2013; liegt direkt auf dem R&uuml;ckweg!"},
-notes:[{type:"warning",text:"&#x23F0; ZEITPLANUNG: Abflug 17:10 &#x2192; Check-in sp&auml;testens 15:00\nSkye &#x2192; Edinburgh: ca. 3,5 Std + Stops &#x2192; Sp&auml;testens 09:00 Uhr von Silverdale losfahren!"}]}
+{id:10,short:"3/6",dayLabel:"Mi",name:"Heimreise",
+ headline:"Heimreise M&uuml;nchen",
+ route:"Skye &rarr; Castle Stalker &rarr; Glencoe &rarr; Edinburgh Airport",
+ dateStr:"Mittwoch, 3. Juni 2026",
+ mapCoords:[
+  {lat:57.450,lng:-6.590,label:"&#x1F305; Silverdale Skye"},
+  {lat:56.533,lng:-5.483,label:"&#x1F3F0; Castle Stalker"},
+  {lat:56.660,lng:-5.004,label:"&#x26F0; Glencoe Viewpoint"},
+  {lat:55.956,lng:-3.189,label:"&#x1F697; Europcar Edinburgh"},
+  {lat:55.950,lng:-3.372,label:"&#x2708; Edinburgh Airport"}
+ ],mapCenter:[56.5,-4.8],mapZoom:7,
+ stops:[
+  {icon:"&#x1F305;",name:"Silverdale &#x2013; Fr&uuml;habfahrt",note:"Sp&auml;testens 09:00 Uhr losfahren!",map:"https://maps.google.com/?cid=18224620871467556881"},
+  {icon:"&#x1F3F0;",name:"Castle Stalker / Loch Laich",note:"Kurzer Fotostop! &middot; Ikonische Wasserburg &middot; A828 Appin",map:"https://www.google.com/maps/search/?api=1&query=Castle+Stalker+Appin+Argyll",isNew:true},
+  {icon:"&#x26F0;&#xFE0F;",name:"Glencoe Viewpoint",note:"Letzter Stopp &#x2013; dramatischste Berglandschaft Schottlands",map:"https://maps.google.com/?cid=11335074517603380735"},
+  {icon:"&#x1F697;",name:"Europcar Edinburgh St James",note:"Auto zur&uuml;ckgeben",map:"https://maps.google.com/?cid=9045101719331601522"},
+  {icon:"&#x2708;&#xFE0F;",name:"Edinburgh Airport",note:"Abflug M&uuml;nchen 17:10 Uhr &#x2705;",time:"17:10",map:"https://maps.google.com/?cid=1824813430506378651"}
+ ],
+ stay:null,dinner:null,
+ bonus:{title:"&#x1F3F0; Castle Stalker &#x2013; nicht verpassen!",text:"Eines der fotogenischsten Schl&ouml;sser Schottlands &#x2013; Wasserburg auf kleiner Insel im Loch Laich, Appin. Bekannt aus Monty Python!\n\nNur 15 Min Fotostop an der A828 &#x2013; liegt direkt auf dem R&uuml;ckweg!"},
+ notes:[{type:"warning",text:"&#x23F0; ZEITPLANUNG: Abflug 17:10 &rarr; Check-in sp&auml;testens 15:00\nSkye &rarr; Edinburgh: ca. 3,5 Std + Stops &rarr; Sp&auml;testens 09:00 Uhr losfahren!"}]}
 ];
 
+// ── MAP SETUP ──────────────────────────────────────────────────────────
+var mapsReady={};
+var TILE='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+var ATTR='&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+
+function mkIcon(num){
+  return L.divIcon({
+    className:'',
+    html:'<div style="width:26px;height:26px;border-radius:50%;background:#c9a45a;color:#0c1a0f;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;border:2px solid rgba(0,0,0,0.5);box-shadow:0 2px 8px rgba(0,0,0,0.7);font-family:sans-serif">'+num+'</div>',
+    iconSize:[26,26],iconAnchor:[13,13],popupAnchor:[0,-15]
+  });
+}
+
+function initDayMap(dayId){
+  var d=days.find(function(x){return x.id===dayId;});
+  if(!d||!d.mapCoords||!d.mapCoords.length)return;
+  var el=document.getElementById('map-'+dayId);
+  if(!el)return;
+  if(mapsReady[dayId]){mapsReady[dayId].invalidateSize();return;}
+  var m=L.map(el,{zoomControl:true,attributionControl:true}).setView(d.mapCenter,d.mapZoom);
+  L.tileLayer(TILE,{attribution:ATTR,maxZoom:19,subdomains:'abcd'}).addTo(m);
+  var lls=d.mapCoords.map(function(c){return[c.lat,c.lng];});
+  if(lls.length>1){L.polyline(lls,{color:'#7abf8a',weight:3,opacity:0.85,dashArray:'6,4'}).addTo(m);}
+  d.mapCoords.forEach(function(c,i){
+    L.marker([c.lat,c.lng],{icon:mkIcon(i+1)}).bindPopup('<b>'+c.label+'</b>',{maxWidth:180}).addTo(m);
+  });
+  if(lls.length>1){try{m.fitBounds(lls,{padding:[24,24]});}catch(e){}}
+  mapsReady[dayId]=m;
+}
+
+function initFirstMap(){setTimeout(function(){initDayMap(0);},100);}
+
+// ── RENDER ──────────────────────────────────────────────────────────────
 function renderDay(d){
   var stops=d.stops.map(function(s){
     return '<div class="stop"><div class="stop-icon">'+s.icon+'</div><div class="stop-body"><div class="stop-name">'+s.name+(s.isNew?' <span class="badge badge-new">&#x2736; NEU</span>':'')+'</div>'+(s.note?'<div class="stop-note">'+s.note+'</div>':'')+'<div class="stop-badges">'+(s.time?'<span class="badge badge-time">&#x23F0; '+s.time+'</span>':'')+(s.map?'<a href="'+s.map+'" target="_blank" class="badge badge-map">&#x1F4CD; Maps</a>':'')+'</div></div></div>';
@@ -303,20 +453,22 @@ function renderDay(d){
   if(d.notes&&d.notes.length){notes='<div class="card"><div class="card-title ct-note">&#x1F4A1; Hinweise</div>'+d.notes.map(function(n){return'<div class="note-item type-'+n.type+'">'+n.text+'</div>';}).join('')+'</div>';}
   var prev=d.id>0?'<button class="nav-btn" onclick="goDay('+(d.id-1)+')">&#x2190; '+days[d.id-1].short+'</button>':'<button class="nav-btn" disabled>&#x2190;</button>';
   var next=d.id<days.length-1?'<button class="nav-btn" onclick="goDay('+(d.id+1)+')">'+days[d.id+1].short+' &#x2192;</button>':'<button class="nav-btn" disabled>&#x2192;</button>';
-  return '<div class="day" id="day-'+d.id+'"><div class="day-header"><h2>'+d.headline+'</h2><div class="day-header-date">'+d.dateStr+'</div><div class="day-header-route">'+d.route+'</div></div><div class="card"><div class="card-title ct-stops">&#x1F4CD; Stationen</div>'+stops+'</div>'+spec+bon+stay+din+notes+'<div class="day-nav">'+prev+next+'</div></div>';
+  var mapPanel='<div class="day-map-panel"><div id="map-'+d.id+'" style="width:100%;height:100%;"></div></div>';
+  var content='<div class="day-content"><div class="card"><div class="card-title ct-stops">&#x1F4CD; Stationen</div>'+stops+'</div>'+spec+bon+stay+din+notes+'</div>';
+  return '<div class="day" id="day-'+d.id+'"><div class="day-header"><h2>'+d.headline+'</h2><div class="day-header-date">'+d.dateStr+'</div><div class="day-header-route">'+d.route+'</div></div><div class="day-twocol">'+mapPanel+content+'</div><div class="day-nav">'+prev+next+'</div></div>';
 }
 
 function renderOverview(){
   var rows=days.map(function(d){
     var tags=[];
     if(d.dinner&&d.dinner.reserved)tags.push('<span class="ov-tag tag-res">&#x2705; Res.</span>');
-    if(d.notes&&d.notes.some(function(n){return n.text&&(n.text.indexOf('06:30')>-1||n.text.indexOf('07:00')>-1||n.text.indexOf('FR&Uuml;H')>-1);}))tags.push('<span class="ov-tag tag-early">&#x23F0; Fr&uuml;h</span>');
+    if(d.notes&&d.notes.some(function(n){return n.text&&(n.text.indexOf('06:30')>-1||n.text.indexOf('07:00')>-1);}))tags.push('<span class="ov-tag tag-early">&#x23F0; Fr&uuml;h</span>');
     if(d.notes&&d.notes.some(function(n){return n.text&&n.text.indexOf('CASH')>-1;}))tags.push('<span class="ov-tag tag-cash">&#x1F4B0; Cash</span>');
     if(d.bonus)tags.push('<span class="ov-tag tag-new">&#x1F4CE; Bonus</span>');
     if(d.special)tags.push('<span class="ov-tag tag-dau">&#x2708;&#xFE0F; Tochter</span>');
-    return '<div class="ov-row" onclick="goDay('+d.id+')"><div class="ov-date"><div class="ov-d">'+d.short+'</div><div class="ov-m">'+d.dayLabel+'</div></div><div class="ov-content"><div class="ov-title">'+d.headline+'</div><div class="ov-sub">'+d.route.split('&middot;')[0].trim()+'</div>'+(tags.length?'<div class="ov-tags">'+tags.join('')+'</div>':'')+'</div></div>';
+    return '<div class="ov-row" onclick="goDay('+d.id+')"><div class="ov-date"><div class="ov-d">'+d.short+'</div><div class="ov-m">'+d.dayLabel+'</div></div><div class="ov-content"><div class="ov-title">'+d.headline+'</div><div class="ov-sub">'+d.route.split('&')[0].trim()+'</div>'+(tags.length?'<div class="ov-tags">'+tags.join('')+'</div>':'')+'</div></div>';
   }).join('');
-  return '<div class="day active" id="day-overview"><div class="card"><div class="card-title ct-note">&#x1F4CB; Reisetibersicht &#x2013; 11 Tage</div><div style="padding:12px 14px;">'+rows+'</div></div></div>';
+  return '<div class="day active" id="day-overview"><div class="card"><div class="card-title ct-note">&#x1F4CB; Reiselibersicht &#x2013; 11 Tage</div><div style="padding:12px 14px;">'+rows+'</div></div></div>';
 }
 
 var tabData=[{id:'overview',label:'&#x25C9; Alle',sub:'&Uuml;bersicht'}].concat(days.map(function(d){return{id:'day-'+d.id,label:d.short,sub:d.dayLabel};}));
@@ -325,9 +477,12 @@ document.getElementById('root').innerHTML=renderOverview()+days.map(renderDay).j
 
 var current=0;
 function hideAll(){document.querySelectorAll('.day').forEach(function(el){el.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(el){el.classList.remove('active');});}
-function goTab(id){hideAll();var cid=id==='overview'?'day-overview':id;document.getElementById(cid).classList.add('active');document.getElementById('tab-'+id).classList.add('active');document.getElementById('tab-'+id).scrollIntoView({inline:'center',behavior:'smooth'});if(id!=='overview'){current=parseInt(id.replace('day-',''));updateProgress();}window.scrollTo({top:0,behavior:'smooth'});}
-function goDay(idx){hideAll();document.getElementById('day-'+idx).classList.add('active');document.getElementById('tab-day-'+idx).classList.add('active');document.getElementById('tab-day-'+idx).scrollIntoView({inline:'center',behavior:'smooth'});current=idx;updateProgress();window.scrollTo({top:0,behavior:'smooth'});}
+function goTab(id){hideAll();var cid=id==='overview'?'day-overview':id;document.getElementById(cid).classList.add('active');document.getElementById('tab-'+id).classList.add('active');document.getElementById('tab-'+id).scrollIntoView({inline:'center',behavior:'smooth'});if(id!=='overview'){var idx=parseInt(id.replace('day-',''));current=idx;updateProgress();setTimeout(function(){initDayMap(idx);},80);}window.scrollTo({top:0,behavior:'smooth'});}
+function goDay(idx){hideAll();document.getElementById('day-'+idx).classList.add('active');document.getElementById('tab-day-'+idx).classList.add('active');document.getElementById('tab-day-'+idx).scrollIntoView({inline:'center',behavior:'smooth'});current=idx;updateProgress();setTimeout(function(){initDayMap(idx);},80);window.scrollTo({top:0,behavior:'smooth'});}
 function updateProgress(){document.getElementById('prog').style.width=((current/(days.length-1))*100)+'%';}
+
+// Init map for day 0 if already authenticated
+if(localStorage.getItem('sc26')==='1'){initFirstMap();}
 </script>
 </body>
 </html>
