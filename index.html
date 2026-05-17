@@ -305,24 +305,41 @@ function initMap(id){
   var lngs=d.mc.map(function(c){return c[1];});
   var cx={lat:(Math.min.apply(null,lats)+Math.max.apply(null,lats))/2,lng:(Math.min.apply(null,lngs)+Math.max.apply(null,lngs))/2};
   var map=new google.maps.Map(el,{center:cx,zoom:d.mz,styles:DARK_STYLE,disableDefaultUI:true,zoomControl:true,gestureHandling:'cooperative'});
-  var fixPts=d.mc.filter(function(c){return!c[3];}).map(function(c){return{lat:c[0],lng:c[1]};});
-  if(fixPts.length>1)new google.maps.Polyline({path:fixPts,geodesic:true,strokeColor:'#7abf8a',strokeOpacity:.85,strokeWeight:3,map:map});
-  var fn=0;
-  d.mc.forEach(function(c){
-    var isO=c[3]===1;
-    if(!isO)fn++;
-    var lbl=isO?'?':String(fn);
-    var fill=isO?'none':'%23c9a45a';
-    var stroke=isO?'%238aabb0':'rgba(0,0,0,0.4)';
-    var tc=isO?'%238aabb0':'%230c1a0f';
-    var da=isO?'4 3':'none';
-    var sw=isO?'2':'1.5';
-    var svg='<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2228%22 height=%2228%22><circle cx=%2214%22 cy=%2214%22 r=%2211%22 fill=%22'+fill+'%22 stroke=%22'+stroke+'%22 stroke-width=%22'+sw+'%22 stroke-dasharray=%22'+da+'%22/><text x=%2214%22 y=%2218.5%22 text-anchor=%22middle%22 font-size=%2210%22 font-weight=%22bold%22 font-family=%22-apple-system,sans-serif%22 fill=%22'+tc+'%22>'+lbl+'</text></svg>';
-    var mk=new google.maps.Marker({position:{lat:c[0],lng:c[1]},map:map,icon:{url:'data:image/svg+xml,'+svg,scaledSize:new google.maps.Size(28,28),anchor:new google.maps.Point(14,14)},title:String(c[2]).replace(/&[^;]+;/g,'')});
-    var iw=new google.maps.InfoWindow({content:'<b style="font-size:.85rem;color:#1a2e1e">'+c[2]+'</b>'});
-    mk.addListener('click',function(){iw.open(map,mk);});
-  });
-  if(d.mc.length>1){var b=new google.maps.LatLngBounds();d.mc.forEach(function(c){b.extend({lat:c[0],lng:c[1]});});map.fitBounds(b,{top:24,right:24,bottom:24,left:24});}
+  var fixPts=d.mc.filter(function(c){return!c[3];});
+  function addMarkers(){
+    var fn=0;
+    d.mc.forEach(function(c){
+      var isO=c[3]===1;
+      if(!isO)fn++;
+      var lbl=isO?'?':String(fn);
+      var fill=isO?'none':'%23c9a45a';
+      var stroke=isO?'%238aabb0':'rgba(0,0,0,0.4)';
+      var tc=isO?'%238aabb0':'%230c1a0f';
+      var da=isO?'4 3':'none';
+      var sw=isO?'2':'1.5';
+      var svg='<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2228%22 height=%2228%22><circle cx=%2214%22 cy=%2214%22 r=%2211%22 fill=%22'+fill+'%22 stroke=%22'+stroke+'%22 stroke-width=%22'+sw+'%22 stroke-dasharray=%22'+da+'%22/><text x=%2214%22 y=%2218.5%22 text-anchor=%22middle%22 font-size=%2210%22 font-weight=%22bold%22 font-family=%22-apple-system,sans-serif%22 fill=%22'+tc+'%22>'+lbl+'</text></svg>';
+      var mk=new google.maps.Marker({position:{lat:c[0],lng:c[1]},map:map,icon:{url:'data:image/svg+xml,'+svg,scaledSize:new google.maps.Size(28,28),anchor:new google.maps.Point(14,14)},title:String(c[2]).replace(/&[^;]+;/g,'')});
+      var iw=new google.maps.InfoWindow({content:'<b style="font-size:.85rem;color:#1a2e1e">'+c[2]+'</b>'});
+      mk.addListener('click',function(){iw.open(map,mk);});
+    });
+  }
+  function fallbackPoly(){
+    new google.maps.Polyline({path:fixPts.map(function(c){return{lat:c[0],lng:c[1]};}),strokeColor:'#7abf8a',strokeWeight:3,strokeOpacity:.85,map:map});
+    var b=new google.maps.LatLngBounds();d.mc.forEach(function(c){b.extend({lat:c[0],lng:c[1]});});map.fitBounds(b,{top:24,right:24,bottom:24,left:24});
+  }
+  if(fixPts.length>=2){
+    try{
+      var ds=new google.maps.DirectionsService();
+      var dr=new google.maps.DirectionsRenderer({map:map,suppressMarkers:true,preserveViewport:false,polylineOptions:{strokeColor:'#7abf8a',strokeWeight:3,strokeOpacity:.85}});
+      var orig={lat:fixPts[0][0],lng:fixPts[0][1]};
+      var dest={lat:fixPts[fixPts.length-1][0],lng:fixPts[fixPts.length-1][1]};
+      var wpts=fixPts.slice(1,-1).map(function(c){return{location:{lat:c[0],lng:c[1]},stopover:false};});
+      ds.route({origin:orig,destination:dest,waypoints:wpts,travelMode:google.maps.TravelMode.DRIVING,optimizeWaypoints:false},function(res,st){
+        if(st==='OK'){dr.setDirections(res);}else{fallbackPoly();}
+        addMarkers();
+      });
+    }catch(e){fallbackPoly();addMarkers();}
+  }else{fallbackPoly();addMarkers();}
   gmaps[id]=map;
 }
 
