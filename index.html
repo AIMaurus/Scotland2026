@@ -238,10 +238,7 @@ var days=[
  ],
  stay:{n:'Silverdale Skye B&B',a:'14 Skinidin, Dunvegan, IV55 8ZS',p:'+44 1470 521251',host:'Jeni',ni:'30 Mai &#x2013; 3 Juni',m:'https://maps.google.com/?cid=18224620871467556881'},
  din:{n:'Old School Restaurant Dunvegan',r:true,p:'+44 1470 521421',m:'https://maps.google.com/?cid=7215660508306731827'},
- special:{ti:'&#x2708;&#xFE0F; Tochter &#x2013; Abflug Glasgow',tx:'&#x1F682; ScotRail 11:40 Uhr Fort William &#x2192; Glasgow Central
-&#x2708;&#xFE0F; Abflug Glasgow 17:30 Uhr
-
-Rechtzeitig zum Bahnhof! Check-in mind. 90 Min vorher.'},
+ special:{ti:'&#x2708;&#xFE0F; Tochter &#x2013; Abflug Glasgow',tx:'&#x1F682; ScotRail 11:40 Uhr Fort William &#x2192; Glasgow Central\n&#x2708;&#xFE0F; Abflug Glasgow 17:30 Uhr\n\nRechtzeitig zum Bahnhof! Check-in mind. 90 Min vorher.'},
  notes:[{t:'info',x:'&#x1F682; JACOBITE STEAM TRAIN: Abfahrt 10:15 Fort William. Alternativ direkt mit Auto &#x2192; Plockton &#x2192; Eilean Donan &#x2192; Skye.'}]},
 
 {id:7,short:'31/5',dayLabel:'So',name:'Skye Nord',headline:'Nord&ouml;stliches Skye',route:'Old Man of Storr &middot; Kilt Rock &middot; Quiraing &middot; Portree',dateStr:'Sonntag, 31. Mai 2026',
@@ -293,8 +290,7 @@ Rechtzeitig zum Bahnhof! Check-in mind. 90 Min vorher.'},
   {i:'&#x2708;&#xFE0F;',n:'Edinburgh Airport',d:'Abflug M&uuml;nchen 17:10 Uhr &middot; Check-in bis 15:00',t:'17:10',m:'https://maps.google.com/?cid=1824813430506378651'}
  ],
  stay:null,din:null,
- notes:[{t:'warning',x:'&#x23F0; ZEITPLANUNG: Abflug 17:10 &#x2192; Check-in sp&auml;testens 15:00
-Skye &#x2192; Edinburgh ca. 3,5 Std + Stops &#x2192; Sp&auml;testens 09:00 Uhr losfahren!'}]}
+ notes:[{t:'warning',x:'&#x23F0; ZEITPLANUNG: Abflug 17:10 &#x2192; Check-in sp&auml;testens 15:00\nSkye &#x2192; Edinburgh ca. 3,5 Std + Stops &#x2192; Sp&auml;testens 09:00 Uhr losfahren!'}]}
 ];
 
 // ── GOOGLE MAPS ─────────────────────────────────────────────────────────
@@ -366,7 +362,7 @@ function renderOv(){
   return '<div class="day active" id="day-ov"><div class="card"><div class="sec-hd sh-route">&#x1F4CB; Reise&uuml;bersicht &#x2013; 11 Tage</div><div style="padding:12px 14px;">'+rows+'</div></div></div>';
 }
 var tabData=[{id:'ov',l:'&#x25C9; Alle',s:'&Uuml;bersicht'}].concat(days.map(function(d){return{id:'d'+d.id,l:d.short,s:d.dayLabel};}));
-document.getElementById('tabNav').innerHTML=tabData.map(function(t,i){return'<div class="tab'+(i===0?' active':'')+'" id="tab-'+t.id+'" onclick="gt(''+t.id+'')"><div class="tab-date">'+t.l+'</div><div class="tab-label">'+t.s+'</div></div>';}).join('');
+document.getElementById('tabNav').innerHTML=tabData.map(function(t,i){return'<div class="tab'+(i===0?' active':'')+'" id="tab-'+t.id+'" onclick="gt(\x27'+t.id+'\x27)" ><div class="tab-date">'+t.l+'</div><div class="tab-label">'+t.s+'</div></div>';}).join('');
 document.getElementById('root').innerHTML=renderOv()+days.map(renderDay).join('');
 var cur=0;
 function ha(){document.querySelectorAll('.day,.tab').forEach(function(e){e.classList.remove('active');});}
