@@ -42,11 +42,15 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .day-header-route{margin-top:8px;font-size:.82rem;color:var(--text2);line-height:1.4;border-top:1px solid var(--border);padding-top:8px;}
 .day-body{display:flex;flex-direction:column;gap:12px;}
 .day-map-wrap{width:100%;height:240px;border-radius:14px;overflow:hidden;border:1px solid var(--border2);background:#111;flex-shrink:0;}
+.day-map-col{display:flex;flex-direction:column;flex-shrink:0;}
 .day-map-wrap>div{width:100%!important;height:100%!important;}
 .day-content{flex:1;min-width:0;}
+.map-info{background:rgba(10,20,12,.88);color:var(--gold);font-size:.72rem;font-weight:700;padding:5px 12px;text-align:center;border:1px solid var(--border2);border-top:none;border-radius:0 0 14px 14px;min-height:24px;letter-spacing:.02em;}
+.map-info-sub{color:var(--text2);font-weight:400;font-size:.68rem;margin-left:6px;}
 @media(min-width:700px){
   .day-body{flex-direction:row;align-items:flex-start;}
-  .day-map-wrap{width:300px;height:480px;position:sticky;top:132px;order:2;flex-shrink:0;}
+  .day-map-col{width:300px;position:sticky;top:132px;order:2;}
+  .day-map-wrap{height:460px;}
   .day-content{order:1;}
 }
 .card{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:12px;overflow:hidden;}
@@ -304,7 +308,7 @@ function initMap(id){
   var lats=d.mc.map(function(c){return c[0];});
   var lngs=d.mc.map(function(c){return c[1];});
   var cx={lat:(Math.min.apply(null,lats)+Math.max.apply(null,lats))/2,lng:(Math.min.apply(null,lngs)+Math.max.apply(null,lngs))/2};
-  var map=new google.maps.Map(el,{center:cx,zoom:d.mz,styles:DARK_STYLE,disableDefaultUI:true,zoomControl:true,gestureHandling:'cooperative'});
+  var map=new google.maps.Map(el,{center:cx,zoom:d.mz,mapTypeId:google.maps.MapTypeId.HYBRID,disableDefaultUI:true,zoomControl:true,gestureHandling:'cooperative'});
   var fixPts=d.mc.filter(function(c){return!c[3];});
   function addMarkers(){
     var fn=0;
@@ -335,7 +339,16 @@ function initMap(id){
       var dest={lat:fixPts[fixPts.length-1][0],lng:fixPts[fixPts.length-1][1]};
       var wpts=fixPts.slice(1,-1).map(function(c){return{location:{lat:c[0],lng:c[1]},stopover:false};});
       ds.route({origin:orig,destination:dest,waypoints:wpts,travelMode:google.maps.TravelMode.DRIVING,optimizeWaypoints:false},function(res,st){
-        if(st==='OK'){dr.setDirections(res);}else{fallbackPoly();}
+        if(st==='OK'){
+          dr.setDirections(res);
+          var legs=res.routes[0].legs;
+          var secs=legs.reduce(function(s,l){return s+l.duration.value;},0);
+          var meters=legs.reduce(function(s,l){return s+l.distance.value;},0);
+          var h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),km=Math.round(meters/1000);
+          var tStr=(h>0?h+'h '+m+'min':m+' min');
+          var strip=document.getElementById('map-info-'+id);
+          if(strip)strip.innerHTML='&#x1F697; <b>'+tStr+'</b><span class="map-info-sub">'+km+' km Fahrtstrecke</span>';
+        }else{fallbackPoly();}
         addMarkers();
       });
     }catch(e){fallbackPoly();addMarkers();}
@@ -363,7 +376,7 @@ function renderDay(d){
   if(d.notes&&d.notes.length){notesH='<div class="card note-card"><div class="sec-hd sh-note">&#x1F4A1; Hinweise</div>'+d.notes.map(function(n){return'<div class="note-item type-'+n.t+'">'+n.x+'</div>';}).join('')+'</div>';}
   var prev=d.id>0?'<button class="nav-btn" onclick="gd('+(d.id-1)+')">&#x2190; '+days[d.id-1].short+'</button>':'<button class="nav-btn" disabled>&#x2190;</button>';
   var next=d.id<days.length-1?'<button class="nav-btn" onclick="gd('+(d.id+1)+')">'+days[d.id+1].short+' &#x2192;</button>':'<button class="nav-btn" disabled>&#x2192;</button>';
-  return '<div class="day" id="day-'+d.id+'"><div class="day-header"><h2>'+d.headline+'</h2><div class="day-header-date">'+d.dateStr+'</div><div class="day-header-route">'+d.route+'</div></div><div class="day-body"><div class="day-map-wrap"><div id="map-'+d.id+'" style="width:100%;height:100%;"></div></div><div class="day-content">'+routeCard+rInfo('&#x1F35C; Mittagessen','sh-lunch',d.lunch||null)+rInfo('&#x1F31C; Dinner / Abendessen','sh-dinner',d.din||null)+rInfo('&#x1F6CF; Unterkunft','sh-stay',d.stay||null)+specH+notesH+'</div></div><div class="day-nav">'+prev+next+'</div></div>';
+  return '<div class="day" id="day-'+d.id+'"><div class="day-header"><h2>'+d.headline+'</h2><div class="day-header-date">'+d.dateStr+'</div><div class="day-header-route">'+d.route+'</div></div><div class="day-body"><div class="day-map-col"><div class="day-map-wrap"><div id="map-'+d.id+'" style="width:100%;height:100%;"></div></div><div class="map-info" id="map-info-'+d.id+'"></div></div><div class="day-content">'+routeCard+rInfo('&#x1F35C; Mittagessen','sh-lunch',d.lunch||null)+rInfo('&#x1F31C; Dinner / Abendessen','sh-dinner',d.din||null)+rInfo('&#x1F6CF; Unterkunft','sh-stay',d.stay||null)+specH+notesH+'</div></div><div class="day-nav">'+prev+next+'</div></div>';
 }
 function renderOv(){
   var rows=days.map(function(d){
