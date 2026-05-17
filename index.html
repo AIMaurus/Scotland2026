@@ -331,6 +331,8 @@ function initMap(id){
   var fixPts=d.mc.filter(function(c){return!c[3];});
   function addMarkers(){
     var fn=0;
+    var sharedIw=new google.maps.InfoWindow();
+    var pinnedMk=null;
     d.mc.forEach(function(c){
       var isO=c[3]===1;
       if(!isO)fn++;
@@ -342,9 +344,16 @@ function initMap(id){
       var sw=isO?'2':'1.5';
       var svg='<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2228%22 height=%2228%22><circle cx=%2214%22 cy=%2214%22 r=%2211%22 fill=%22'+fill+'%22 stroke=%22'+stroke+'%22 stroke-width=%22'+sw+'%22 stroke-dasharray=%22'+da+'%22/><text x=%2214%22 y=%2218.5%22 text-anchor=%22middle%22 font-size=%2210%22 font-weight=%22bold%22 font-family=%22-apple-system,sans-serif%22 fill=%22'+tc+'%22>'+lbl+'</text></svg>';
       var mk=new google.maps.Marker({position:{lat:c[0],lng:c[1]},map:map,icon:{url:'data:image/svg+xml,'+svg,scaledSize:new google.maps.Size(28,28),anchor:new google.maps.Point(14,14)},title:String(c[2]).replace(/&[^;]+;/g,'')});
-      var iw=new google.maps.InfoWindow({content:'<b style="font-size:.85rem;color:#1a2e1e">'+c[2]+'</b>'});
-      mk.addListener('click',function(){iw.open(map,mk);});
+      var iwHtml='<div style="font-size:.82rem;font-weight:700;color:#1a2e1e;padding:3px 6px;white-space:nowrap;max-width:180px">'+c[2]+'<div style="font-size:.68rem;color:#5a8a6a;margin-top:2px">&#x1F4CD; In Google Maps öffnen</div></div>';
+      var mapsUrl='https://maps.google.com/?q='+c[0]+','+c[1];
+      (function(marker,html,url){
+        marker.addListener('mouseover',function(){sharedIw.setContent(html);sharedIw.open(map,marker);});
+        marker.addListener('mouseout',function(){if(pinnedMk!==marker)sharedIw.close();});
+        marker.addListener('click',function(){pinnedMk=marker;sharedIw.setContent(html);sharedIw.open(map,marker);window.open(url,'_blank');});
+      })(mk,iwHtml,mapsUrl);
     });
+    google.maps.event.addListener(map,'click',function(){sharedIw.close();pinnedMk=null;});
+    sharedIw.addListener('closeclick',function(){pinnedMk=null;});
   }
   function fallbackPoly(){
     new google.maps.Polyline({path:fixPts.map(function(c){return{lat:c[0],lng:c[1]};}),strokeColor:'#7abf8a',strokeWeight:3,strokeOpacity:.85,map:map});
